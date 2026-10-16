@@ -1,24 +1,32 @@
 {
   "config": {
-    "BAR_CYCLE_SECONDS": 30,
-    "POINTS": [500, 500, 400, 300, 200],
-    "QUESTIONS_COUNT": 15,
+    "BAR_CYCLE_SECONDS": 10000,
+    "POINTS": [
+      500,
+      500,
+      400,
+      300,
+      200
+    ],
+    "QUESTIONS_COUNT": 5,
     "SHUFFLE_QUESTIONS": false,
-    "DEFAULT_TEAM_NAMES": ["الفريق الأول", "الفريق الثاني"]
+    "DEFAULT_TEAM_NAMES": [
+      "شنغل",
+      "منغل"
+    ]
   },
   "avatars": [
-    "https://i.pinimg.com/736x/36/0f/bb/360fbb22f2ba66aade98e5159f7cd214.jpg",
-    "https://w7.pngwing.com/pngs/896/920/png-transparent-tweety-sylvester-jr-bugs-bunny-cartoon-animation-cartoon-character-comics-mammal.png"
+    "https://jeffmoorecomposer.com/wp-content/uploads/2018/07/Spotify-icon-300x300.png"
   ],
   "questions": [
     {
-      "answer": "ميمز",
-      "emoji": "😂",
+      "answer": "بطاطس",
+      "emoji": "",
       "images": [
-        "https://example.com/img1.jpg",
-        "https://example.com/img2.jpg",
-        "https://example.com/img3.jpg",
-        "https://example.com/img4.jpg"
+        "https://www.alyaum.com/uploads/images/2023/01/14/1807050.jpg",
+        "https://cdnx.premiumread.com/?url=https://www.okaz.com.sa/uploads/images/2020/09/23/1637951.jpg&w=830&q=100&f=webp",
+        "https://vid.alarabiya.net/images/2020/12/15/934ef3da-b60d-477f-bb67-ff4d1e13874a/934ef3da-b60d-477f-bb67-ff4d1e13874a_16x9_1200x676.jpeg",
+        "https://destinationksa.com/wp-content/uploads/2025/02/_10nd.webp"
       ]
     }
   ]
