@@ -8,7 +8,7 @@
 <style>
 :root{
   --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
-  --accent:#a98467; --accent-strong:#6d8b74; --gold:#c9a227;
+  --accent:#6d8b74; --accent2:#a98467; --gold:#c9a227;
   --text:#3a352f; --muted:#8a8072; --danger:#b85c5c; --ok:#6d8b74;
   --line:rgba(58,53,47,.12);
 }
@@ -32,24 +32,36 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   border:1px solid var(--line);border-radius:22px;padding:28px;
   box-shadow:0 10px 40px rgba(58,53,47,.10)}
 .logo{text-align:center;margin-bottom:22px}
-.logo h1{font-size:clamp(28px,6vw,46px);color:var(--accent-strong);letter-spacing:1px}
+.logo h1{font-size:clamp(28px,6vw,46px);color:var(--accent);letter-spacing:1px}
 .logo p{color:var(--muted);margin-top:6px}
+
+.mode-select{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.mode-btn{background:rgba(58,53,47,.03);border:2px solid var(--line);border-radius:16px;padding:18px;
+  text-align:center;transition:.2s;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.mode-btn:hover{border-color:var(--gold);transform:translateY(-3px)}
+.mode-btn.active{border-color:var(--accent);background:linear-gradient(160deg,rgba(109,139,116,.12),rgba(109,139,116,.04))}
+.mode-btn .ic{font-size:38px}
+.mode-btn .nm{font-size:18px;font-weight:700;color:var(--text)}
+.mode-btn .ds{font-size:12px;color:var(--muted)}
+
 .teams-setup{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.teams-setup.solo{grid-template-columns:1fr;max-width:340px;margin:0 auto}
 .team-box{background:rgba(58,53,47,.03);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center}
 .team-box.t1{border-color:rgba(109,139,116,.45)}
 .team-box.t2{border-color:rgba(169,132,103,.5)}
 .avatar-pick{width:96px;height:96px;border-radius:50%;margin:0 auto 12px;overflow:hidden;position:relative;
-  border:3px solid var(--accent-strong);background:#fff;cursor:pointer;display:block}
-.t2 .avatar-pick{border-color:var(--accent)}
+  border:3px solid var(--accent);background:#fff;cursor:pointer;display:block}
+.t2 .avatar-pick{border-color:var(--accent2)}
 .avatar-pick img{width:100%;height:100%;object-fit:cover;display:block}
 .avatar-pick span{position:absolute;inset:auto 0 0 0;background:rgba(58,53,47,.55);color:#fff;font-size:11px;padding:3px 0}
 .team-box input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
   background:#fff;color:var(--text);font-size:16px;text-align:center;font-family:inherit}
-.team-box input[type=text]:focus{outline:2px solid var(--accent-strong)}
+.team-box input[type=text]:focus{outline:2px solid var(--accent)}
+
 .btn{padding:12px 22px;border-radius:12px;font-size:16px;font-weight:700;transition:.15s transform,.15s filter,.15s opacity}
 .btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-primary{background:var(--accent-strong);color:#fff}
+.btn-primary{background:var(--accent);color:#fff}
 .btn-gold{background:var(--gold);color:#3a352f}
 .btn-ghost{background:rgba(58,53,47,.06);border:1px solid var(--line)}
 .btn-danger{background:rgba(184,92,92,.12);border:1px solid var(--danger);color:var(--danger)}
@@ -64,7 +76,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .picker-card{width:100%;max-width:640px;background:var(--panel);
   border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(58,53,47,.25);
   max-height:88vh;overflow:auto}
-.picker-card h3{text-align:center;margin-bottom:14px;color:var(--accent-strong);font-size:20px}
+.picker-card h3{text-align:center;margin-bottom:14px;color:var(--accent);font-size:20px}
 .picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .picker-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;cursor:pointer;
   border:3px solid var(--line);transition:.15s;background:#fff}
@@ -76,26 +88,27 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   background:var(--panel);border:1px solid var(--line);
   border-radius:18px;padding:12px 16px;position:sticky;top:8px;z-index:10;
   box-shadow:0 6px 25px rgba(58,53,47,.10)}
+.scoreboard.solo{grid-template-columns:1fr auto}
 .sb-team{display:flex;align-items:center;gap:12px;min-width:0}
 .sb-team.right{justify-content:flex-start}
 .sb-team.left{justify-content:flex-end;flex-direction:row-reverse}
-.sb-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-strong);flex:none;background:#fff}
-.left .sb-avatar{border-color:var(--accent)}
+.sb-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);flex:none;background:#fff}
+.left .sb-avatar{border-color:var(--accent2)}
 .sb-info{min-width:0}
 .sb-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22vw}
 .sb-score{font-size:28px;font-weight:800;color:var(--gold);line-height:1.1}
 .sb-score.bump{animation:bump .5s}
-@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.3);color:var(--accent-strong)}100%{transform:scale(1)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.3);color:var(--accent)}100%{transform:scale(1)}}
 .sb-mid{text-align:center}
 .sb-mid .qn{font-size:13px;color:var(--muted)}
-.sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent-strong)}
+.sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent)}
 
 /* ---------- Timer ---------- */
 .timer-wrap{margin:14px 0 4px;display:flex;align-items:center;gap:12px}
 .timer-bar{flex:1;height:14px;border-radius:99px;background:rgba(58,53,47,.08);overflow:hidden;border:1px solid var(--line)}
-.timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent-strong);
+.timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent);
   transition:width .25s linear,background .3s}
-.timer-num{font-size:24px;font-weight:800;min-width:64px;text-align:center;color:var(--accent-strong);font-variant-numeric:tabular-nums;direction:ltr}
+.timer-num{font-size:24px;font-weight:800;min-width:64px;text-align:center;color:var(--accent);font-variant-numeric:tabular-nums;direction:ltr}
 .tbtn{padding:8px 14px;font-size:14px;white-space:nowrap}
 .timer-num.warn{color:var(--gold)} .timer-num.danger{color:var(--danger)}
 
@@ -138,7 +151,33 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   animation:pop .35s;
 }
 .answer-box .lbl{color:var(--muted);font-size:14px;margin-bottom:6px}
-.answer-box .ans{color:var(--accent-strong);font-size:clamp(26px,5vw,40px);font-weight:800;letter-spacing:.5px}
+.answer-box .ans{color:var(--accent);font-size:clamp(26px,5vw,40px);font-weight:800;letter-spacing:.5px}
+
+/* ---------- Solo Input ---------- */
+.solo-area{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
+  margin:16px 0;box-shadow:0 8px 28px rgba(58,53,47,.10);
+}
+.solo-input-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.solo-input-row input{
+  flex:1;min-width:200px;padding:14px 16px;border-radius:12px;border:2px solid var(--line);
+  background:#fff;color:var(--text);font-size:18px;text-align:center;font-family:inherit;
+  transition:.2s;
+}
+.solo-input-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(109,139,116,.15)}
+.solo-input-row input.ok{border-color:var(--ok);background:rgba(109,139,116,.08)}
+.solo-input-row input.err{border-color:var(--danger);background:rgba(184,92,92,.06);animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.solo-input-row .btn{padding:14px 26px;font-size:16px}
+
+.solo-status{margin-top:12px;text-align:center;font-size:15px;color:var(--muted);min-height:24px}
+.solo-status.ok{color:var(--ok);font-weight:700}
+.solo-status.err{color:var(--danger);font-weight:700}
+
+.tries-dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.try-dot{width:14px;height:14px;border-radius:50%;background:rgba(58,53,47,.15);transition:.2s}
+.try-dot.used{background:var(--danger);opacity:.7}
+.try-dot.current{background:var(--accent);transform:scale(1.2)}
 
 /* ---------- Award ---------- */
 .award-panel{
@@ -149,8 +188,8 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .award-panel .sub b{color:var(--gold)}
 .award{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:12px}
 .award .btn{min-width:150px}
-.award .btn.win1{background:var(--accent-strong);color:#fff}
-.award .btn.win2{background:var(--accent);color:#fff}
+.award .btn.win1{background:var(--accent);color:#fff}
+.award .btn.win2{background:var(--accent2);color:#fff}
 
 .manual-edit{
   margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
@@ -183,10 +222,18 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   box-shadow:0 0 25px rgba(201,162,39,.35)}
 .final{display:flex;justify-content:center;gap:30px;margin:16px 0 24px;flex-wrap:wrap}
 .final div{background:rgba(58,53,47,.04);padding:12px 22px;border-radius:14px;min-width:140px}
-.final b{display:block;font-size:28px;color:var(--accent-strong)}
+.final b{display:block;font-size:28px;color:var(--accent)}
+
+.solo-report{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:20px 0}
+.solo-report .stat{background:rgba(58,53,47,.04);padding:16px 24px;border-radius:14px;min-width:130px}
+.solo-report .stat .num{font-size:32px;font-weight:800;color:var(--accent)}
+.solo-report .stat .lbl{font-size:13px;color:var(--muted);margin-top:4px}
+.solo-report .stat.good .num{color:var(--ok)}
+.solo-report .stat.bad .num{color:var(--danger)}
 
 @media (max-width:640px){
   .teams-setup{grid-template-columns:1fr}
+  .mode-select{grid-template-columns:1fr}
   .sb-avatar{width:42px;height:42px}
   .sb-score{font-size:22px}
   .sb-name{font-size:13px;max-width:26vw}
@@ -207,6 +254,23 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       <p>صورة واحدة… خمّن ما تدل عليه!</p>
     </div>
     <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
+
+    <!-- اختيار الوضع -->
+    <div id="modeChooser" class="hidden">
+      <div class="mode-select">
+        <div class="mode-btn active" id="modeTwo" data-mode="two">
+          <div class="ic">👥</div>
+          <div class="nm">فريقان</div>
+          <div class="ds">فريقان يتنافسان</div>
+        </div>
+        <div class="mode-btn" id="modeSolo" data-mode="solo">
+          <div class="ic">✍️</div>
+          <div class="nm">لاعب واحد</div>
+          <div class="ds">اكتب إجابتك بنفسك</div>
+        </div>
+      </div>
+    </div>
+
     <div class="teams-setup" id="teamsSetup">
       <div class="team-box t1">
         <div class="avatar-pick" id="pick1" title="اضغط لاختيار صورة">
@@ -215,7 +279,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         </div>
         <input type="text" id="name1" maxlength="18" placeholder="اسم الفريق الأول">
       </div>
-      <div class="team-box t2">
+      <div class="team-box t2" id="teamBox2">
         <div class="avatar-pick" id="pick2" title="اضغط لاختيار صورة">
           <img id="av2" alt="">
           <span>اختر صورة</span>
@@ -223,9 +287,9 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         <input type="text" id="name2" maxlength="18" placeholder="اسم الفريق الثاني">
       </div>
     </div>
-    <div class="start-row"><button class="btn btn-primary" id="startBtn">▶ ابدأ المباراة</button></div>
+
+    <div class="start-row"><button class="btn btn-primary" id="startBtn" onclick="if(window.SFX)window.SFX.play('go')">▶ ابدأ المباراة</button></div>
     <div class="rules" id="rulesBox">
-      لكل سؤال نقطة واحدة للفريق الذي يجيب أولًا<br>
       مؤقت بلا حد — مع إيقاف / استئناف / إعادة
     </div>
   </div>
@@ -243,7 +307,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 <!-- ============ شاشة اللعب ============ -->
 <section id="game" class="hidden">
   <div class="wrap">
-    <div class="scoreboard">
+    <div class="scoreboard" id="scoreboard">
       <div class="sb-team right">
         <img class="sb-avatar" id="sbAv1" alt="">
         <div class="sb-info"><div class="sb-name" id="sbName1"></div><div class="sb-score" id="sbScore1">0</div></div>
@@ -252,7 +316,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         <div class="qn" id="qNum"></div>
         <div class="pts">⭐ <span id="curPts">1</span></div>
       </div>
-      <div class="sb-team left">
+      <div class="sb-team left" id="sbTeam2">
         <img class="sb-avatar" id="sbAv2" alt="">
         <div class="sb-info" style="text-align:left"><div class="sb-name" id="sbName2"></div><div class="sb-score" id="sbScore2">0</div></div>
       </div>
@@ -278,12 +342,23 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       </div>
     </div>
 
+    <!-- منطقة الإجابة للاعب الواحد -->
+    <div class="solo-area hidden" id="soloArea">
+      <div class="solo-input-row">
+        <input type="text" id="soloInput" placeholder="اكتب إجابتك هنا..." autocomplete="off" spellcheck="false">
+        <button class="btn btn-primary" id="soloCheckBtn">✓ تحقق</button>
+      </div>
+      <div class="solo-status" id="soloStatus"></div>
+      <div class="tries-dots" id="triesDots"></div>
+    </div>
+
     <div class="controls">
       <button class="btn btn-gold" id="hintBtn">💡 تلميح</button>
       <button class="btn btn-primary" id="revealBtn">👁 إظهار الإجابة</button>
       <button class="btn btn-ghost" id="skipBtn">⏭ تخطي</button>
     </div>
 
+    <!-- لوحة الفائز (وضع الفريقين) -->
     <div class="award-panel hidden" id="awardPanel">
       <div class="sub">من أجاب أولًا؟ سيحصل على <b id="awardPts">1</b> نقطة</div>
       <div class="award" id="awardBtns">
@@ -320,11 +395,16 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
     <h2 id="endTitle">🏆</h2>
     <img class="winner-avatar" id="winAv" alt="">
     <div id="winName" style="font-size:26px;font-weight:800"></div>
-    <div class="final">
+    <div class="final" id="finalTwo">
       <div><span id="fName1"></span><b id="fScore1">0</b></div>
       <div><span id="fName2"></span><b id="fScore2">0</b></div>
     </div>
-        <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
+    <div class="solo-report hidden" id="finalSolo">
+      <div class="stat good"><div class="num" id="soloRight">0</div><div class="lbl">إجابات صحيحة</div></div>
+      <div class="stat bad"><div class="num" id="soloWrong">0</div><div class="lbl">إجابات خاطئة</div></div>
+      <div class="stat"><div class="num" id="soloScore">0</div><div class="lbl">النقاط النهائية</div></div>
+    </div>
+    <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
   </div>
 </section>
 
@@ -333,16 +413,19 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 
 <script src="sounds.js"></script>
 <script>
-
 /* =====================================================
-   الإعدادات الافتراضية (تُستبدل من questions-single.json)
+   الإعدادات
    ===================================================== */
 let CONFIG = {
   BAR_CYCLE_SECONDS: 30,
   QUESTIONS_COUNT: 15,
   SHUFFLE_QUESTIONS: false,
   DEFAULT_TEAM_NAMES: ["الفريق الأول", "الفريق الثاني"],
-  POINTS_PER_QUESTION: 1
+  POINTS_PER_QUESTION: 1,
+  SOLO_MODE_ENABLED: true,
+  SOLO_TRIES: 3,
+  SOLO_POINTS: 1,
+  SOLO_MATCH_MODE: "flexible"
 };
 
 let AVATARS = [];
@@ -361,7 +444,7 @@ async function loadGameData(){
     QUESTIONS = j.questions || [];
   }catch(e){
     console.warn("تعذّر تحميل questions-single.json:", e);
-    QUESTIONS = [{ answer:"مثال", hint:"", image:"" }];
+    QUESTIONS = [{ answer:"مثال", hint:"", image:"", alternatives:[] }];
   }
 }
 
@@ -380,12 +463,47 @@ function defaultAvatar(color){
 const DEF_AV = [defaultAvatar("#6d8b74"), defaultAvatar("#a98467")];
 
 /* =====================================================
+   مطابقة النص المرنة
+   ===================================================== */
+function normalizeText(s){
+  if(!s) return "";
+  return String(s)
+    .trim()
+    .toLowerCase()
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, "") // تشكيل + تطويل
+    .replace(/[أإآا]/g, "ا")
+    .replace(/[ىي]/g, "ي")
+    .replace(/[ؤو]/g, "و")
+    .replace(/ة/g, "ه")
+    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, "") // إزالة الرموز
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function checkAnswer(userInput, question){
+  const u = normalizeText(userInput);
+  if(!u) return false;
+  const main = normalizeText(question.answer);
+  if(u === main) return true;
+  if(CONFIG.SOLO_MATCH_MODE === "flexible" && Array.isArray(question.alternatives)){
+    for(const alt of question.alternatives){
+      if(u === normalizeText(alt)) return true;
+    }
+  }
+  return false;
+}
+
+/* =====================================================
    الحالة
    ===================================================== */
 let teams = [
   { name:"", avatar:DEF_AV[0], score:0 },
   { name:"", avatar:DEF_AV[1], score:0 }
 ];
+let playMode = "two"; // "two" | "solo"
+let soloStats = { right:0, wrong:0, score:0 };
+let currentTry = 0;
+let soloLocked = false; // لقفل الإدخال أثناء الانتقال
+
 let quiz = [], qi = 0, timerId = null, qState = "idle";
 let elapsedMs = 0, running = false, lastTick = 0;
 
@@ -396,17 +514,59 @@ function initUI(){
   $("av1").src = DEF_AV[0];
   $("av2").src = DEF_AV[1];
   $("loadingMsg").classList.add("hidden");
-  $("teamsSetup").classList.remove("hidden");
-  $("rulesBox").innerHTML =
-    `${CONFIG.QUESTIONS_COUNT} سؤالًا • نقطة واحدة لكل سؤال<br>` +
-    `مؤقت بلا حد — مع إيقاف / استئناف / إعادة`;
 
-  if(!AVATARS.length){
-    $("pick1").onclick = null;
-    $("pick2").onclick = null;
+  // خيار الوضع
+  if(CONFIG.SOLO_MODE_ENABLED){
+    $("modeChooser").classList.remove("hidden");
+  } else {
+    $("modeChooser").classList.add("hidden");
+    playMode = "two";
+  }
+
+  updateModeUI();
+  updateRulesText();
+}
+
+function updateModeUI(){
+  // تحديث أزرار الوضع
+  document.querySelectorAll(".mode-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.mode === playMode);
+  });
+  // إظهار/إخفاء الفريق الثاني
+  if(playMode === "solo"){
+    $("teamBox2").classList.add("hidden");
+    $("teamsSetup").classList.add("solo");
+  } else {
+    $("teamBox2").classList.remove("hidden");
+    $("teamsSetup").classList.remove("solo");
   }
 }
 
+function updateRulesText(){
+  if(playMode === "solo"){
+    $("rulesBox").innerHTML =
+      `${CONFIG.QUESTIONS_COUNT} سؤالًا • ${CONFIG.SOLO_TRIES} محاولات لكل سؤال • نقطة لكل إجابة صحيحة<br>` +
+      `اكتب إجابتك في الحقل واضغط "تحقق"`;
+  } else {
+    $("rulesBox").innerHTML =
+      `${CONFIG.QUESTIONS_COUNT} سؤالًا • نقطة واحدة لكل سؤال<br>` +
+      `مؤقت بلا حد — مع إيقاف / استئناف / إعادة`;
+  }
+}
+
+// ربط اختيار الوضع
+document.querySelectorAll(".mode-btn").forEach(b => {
+  b.onclick = () => {
+    if(window.SFX) window.SFX.play("click");
+    playMode = b.dataset.mode;
+    updateModeUI();
+    updateRulesText();
+  };
+});
+
+/* =====================================================
+   اختيار الصورة الرمزية
+   ===================================================== */
 function openPicker(idx){
   if(!AVATARS.length){ alert("لا توجد صور رمزية. أضفها من الداشبورد."); return; }
   const grid = $("pickerGrid");
@@ -431,22 +591,42 @@ $("pick2").onclick = () => openPicker(1);
 $("pickerClose").onclick = closePicker;
 $("avatarPicker").onclick = e => { if(e.target.id === "avatarPicker") closePicker(); };
 
+/* =====================================================
+   بدء المباراة
+   ===================================================== */
 $("startBtn").onclick = () => {
   if(!QUESTIONS.length){ alert("لا توجد أسئلة. أضفها من الداشبورد أولًا."); return; }
+
   teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
   teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
   teams[0].score = teams[1].score = 0;
+
+  soloStats = { right:0, wrong:0, score:0 };
 
   quiz = QUESTIONS.slice(0, CONFIG.QUESTIONS_COUNT);
   if(CONFIG.SHUFFLE_QUESTIONS) quiz = quiz.map(q=>[Math.random(),q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
   qi = 0;
 
-  $("sbAv1").src = teams[0].avatar;  $("sbAv2").src = teams[1].avatar;
-  $("sbName1").textContent = teams[0].name; $("sbName2").textContent = teams[1].name;
+  // تجهيز لوحة النتائج
+  $("sbAv1").src = teams[0].avatar;
+  $("sbName1").textContent = teams[0].name;
   $("award1").textContent = "✔ " + teams[0].name;
-  $("award2").textContent = "✔ " + teams[1].name;
   $("mn1").textContent = teams[0].name;
-  $("mn2").textContent = teams[1].name;
+
+  if(playMode === "solo"){
+    $("scoreboard").classList.add("solo");
+    $("sbTeam2").classList.add("hidden");
+    $("sbAv2").src = "";
+    $("sbName2").textContent = "";
+  } else {
+    $("scoreboard").classList.remove("solo");
+    $("sbTeam2").classList.remove("hidden");
+    $("sbAv2").src = teams[1].avatar;
+    $("sbName2").textContent = teams[1].name;
+    $("award2").textContent = "✔ " + teams[1].name;
+    $("mn2").textContent = teams[1].name;
+  }
+
   updateScores();
 
   $("setup").classList.add("hidden");
@@ -459,8 +639,12 @@ $("startBtn").onclick = () => {
    منطق اللعبة
    ===================================================== */
 function updateScores(bumpIdx){
-  $("sbScore1").textContent = teams[0].score;
-  $("sbScore2").textContent = teams[1].score;
+  if(playMode === "solo"){
+    $("sbScore1").textContent = soloStats.score;
+  } else {
+    $("sbScore1").textContent = teams[0].score;
+    $("sbScore2").textContent = teams[1].score;
+  }
   if(bumpIdx !== undefined){
     const el = $("sbScore"+(bumpIdx+1));
     el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
@@ -471,30 +655,63 @@ function loadQuestion(){
   clearInterval(timerId);
   const q = quiz[qi];
   qState = "playing";
+  currentTry = 0;
+  soloLocked = false;
   $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
-  $("curPts").textContent = CONFIG.POINTS_PER_QUESTION;
+  $("curPts").textContent = playMode === "solo" ? CONFIG.SOLO_POINTS : CONFIG.POINTS_PER_QUESTION;
 
+  // الصورة
   const im = $("qImage");
   im.onerror = () => { im.onerror = null; im.src = fallbackImg(q.answer); };
   im.src = q.image ? imgURL(q.image) : fallbackImg(q.answer);
 
+  // إخفاء التلميح والجواب
   $("hintBox").classList.add("hidden");
   $("hintText").textContent = "";
   $("answerBox").classList.add("hidden");
   $("ansText").textContent = "";
 
+  // لوحة الفائز
   $("awardPanel").classList.add("hidden");
   $("awardBtns").classList.remove("hidden");
   $("manualEdit").classList.remove("show");
   $("awardDone").classList.add("hidden");
   $("nextBtn").classList.add("hidden");
 
+  // الأزرار
   $("hintBtn").disabled = false;
   $("revealBtn").disabled = false;
   $("skipBtn").disabled = false;
   $("nextBtn").textContent = (qi === quiz.length-1) ? "🏁 إنهاء المباراة" : "السؤال التالي ➜";
 
+  // الوضع الفردي
+  if(playMode === "solo"){
+    $("soloArea").classList.remove("hidden");
+    $("soloInput").value = "";
+    $("soloInput").className = "";
+    $("soloInput").disabled = false;
+    $("soloCheckBtn").disabled = false;
+    $("soloStatus").textContent = "";
+    $("soloStatus").className = "solo-status";
+    paintTriesDots();
+  } else {
+    $("soloArea").classList.add("hidden");
+  }
+
   startTimer();
+}
+
+function paintTriesDots(){
+  const box = $("triesDots");
+  box.innerHTML = "";
+  const total = CONFIG.SOLO_TRIES;
+  for(let i = 0; i < total; i++){
+    const d = document.createElement("div");
+    d.className = "try-dot";
+    if(i < currentTry) d.classList.add("used");
+    else if(i === currentTry) d.classList.add("current");
+    box.appendChild(d);
+  }
 }
 
 /* ---------- المؤقت ---------- */
@@ -525,7 +742,7 @@ function paintTimer(){
   const ratio = (elapsedMs % cycle) / cycle;
   const f = $("timerFill"), n = $("timerNum");
   f.style.width = Math.max(ratio * 100, 1) + "%";
-  f.style.background = ratio < .5 ? "var(--accent-strong)" : ratio < .75 ? "var(--gold)" : "var(--danger)";
+  f.style.background = ratio < .5 ? "var(--accent)" : ratio < .75 ? "var(--gold)" : "var(--danger)";
   n.textContent = m + ":" + String(s).padStart(2, "0");
   n.className = "timer-num" + (ratio >= .75 ? " danger" : ratio >= .5 ? " warn" : "");
   $("pauseBtn").textContent = running ? "⏸ إيقاف" : "▶ استئناف";
@@ -533,7 +750,7 @@ function paintTimer(){
 
 /* ---------- تلميح ---------- */
 function showHint(){
-  if(qState !== "playing") return;
+  if(qState !== "playing" && qState !== "solo-playing") return;
   const q = quiz[qi];
   if(!q.hint){ alert("لا يوجد تلميح لهذا السؤال"); return; }
   $("hintText").textContent = q.hint;
@@ -541,11 +758,110 @@ function showHint(){
   $("hintBtn").disabled = true;
 }
 
-/* ---------- إظهار الإجابة ---------- */
+/* ---------- الوضع الفردي: التحقق ---------- */
+function soloCheck(){
+  if(playMode !== "solo" || soloLocked) return;
+  if(qState !== "playing") return;
+  const input = $("soloInput");
+  const val = input.value.trim();
+  if(!val){
+    $("soloStatus").textContent = "اكتب إجابتك أولاً";
+    $("soloStatus").className = "solo-status err";
+    return;
+  }
+  const q = quiz[qi];
+  if(checkAnswer(val, q)){
+    // صح
+    input.className = "ok";
+    input.disabled = true;
+    $("soloCheckBtn").disabled = true;
+    soloStats.right++;
+    soloStats.score += CONFIG.SOLO_POINTS;
+    updateScores();
+    if(window.SFX) window.SFX.play("success");
+    $("soloStatus").textContent = "✅ إجابة صحيحة!";
+    $("soloStatus").className = "solo-status ok";
+    qState = "solo-done";
+    stopTimer();
+    // إظهار الجواب + زر التالي
+    $("ansText").textContent = q.answer || "—";
+    $("answerBox").classList.remove("hidden");
+    $("hintBtn").disabled = true;
+    $("revealBtn").disabled = true;
+    $("skipBtn").disabled = true;
+    $("nextBtn").classList.remove("hidden");
+  } else {
+    // غلط
+    currentTry++;
+    if(window.SFX) window.SFX.play("fail");
+    input.className = "err";
+    setTimeout(() => { input.className = ""; }, 400);
+    if(currentTry >= CONFIG.SOLO_TRIES){
+      // خلصت المحاولات
+      input.value = "";
+      input.disabled = true;
+      $("soloCheckBtn").disabled = true;
+      soloStats.wrong++;
+      updateScores();
+      $("soloStatus").textContent = "❌ انتهت المحاولات — سيُعرض الجواب";
+      $("soloStatus").className = "solo-status err";
+      soloLocked = true;
+      qState = "solo-done";
+      stopTimer();
+      // إظهار الجواب
+      $("ansText").textContent = q.answer || "—";
+      $("answerBox").classList.remove("hidden");
+      $("hintBtn").disabled = true;
+      $("revealBtn").disabled = true;
+      $("skipBtn").disabled = true;
+      // بعد 2.5 ثانية ينتقل تلقائيًا
+      setTimeout(() => { nextQuestion(); }, 2500);
+    } else {
+      // محاولات باقية
+      input.value = "";
+      $("soloStatus").textContent = `❌ إجابة خاطئة — المحاولات المتبقية: ${CONFIG.SOLO_TRIES - currentTry}`;
+      $("soloStatus").className = "solo-status err";
+      paintTriesDots();
+    }
+  }
+}
+
+function stopTimer(){
+  running = false;
+  clearInterval(timerId);
+  setTimerBtns(false);
+  paintTimer();
+}
+
+/* ---------- إظهار الإجابة (الفريقين) ---------- */
 function revealAnswer(){
+  if(playMode === "solo"){
+    // في الوضع الفردي: إظهار الجواب = تخطي
+    if(qState !== "playing") return;
+    if(window.SFX) window.SFX.play("reveal");
+    qState = "solo-done";
+    soloLocked = true;
+    soloStats.wrong++;
+    updateScores();
+    stopTimer();
+    const q = quiz[qi];
+    $("ansText").textContent = q.answer || "—";
+    $("answerBox").classList.remove("hidden");
+    $("soloInput").disabled = true;
+    $("soloCheckBtn").disabled = true;
+    $("soloStatus").textContent = "تم إظهار الإجابة";
+    $("soloStatus").className = "solo-status";
+    $("hintBtn").disabled = true;
+    $("revealBtn").disabled = true;
+    $("skipBtn").disabled = true;
+    $("nextBtn").classList.remove("hidden");
+    return;
+  }
+
+  // وضع الفريقين
   if(qState !== "playing") return;
   qState = "revealed";
-  running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
+  stopTimer();
   if(window.SFX) window.SFX.play("reveal");
   const q = quiz[qi];
   $("ansText").textContent = q.answer || "—";
@@ -559,8 +875,9 @@ function revealAnswer(){
   $("awardPanel").scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-/* ---------- منح النقطة ---------- */
+/* ---------- منح النقطة (الفريقين) ---------- */
 function award(idx){
+  if(playMode === "solo") return;
   if(qState !== "revealed") return;
   qState = "done";
   const pts = CONFIG.POINTS_PER_QUESTION;
@@ -608,32 +925,57 @@ function nextQuestion(){
   window.scrollTo({top:0, behavior:"smooth"});
 }
 function skipQuestion(){
+  if(playMode === "solo"){
+    if(qState !== "playing") return;
+    soloLocked = true;
+    stopTimer();
+    soloStats.wrong++;
+    updateScores();
+    nextQuestion();
+    return;
+  }
   if(qState !== "playing") return;
-  clearInterval(timerId); qState = "done"; nextQuestion();
+  stopTimer();
+  qState = "done";
+  nextQuestion();
 }
 
 function endGame(){
-  clearInterval(timerId);
+  stopTimer();
   $("game").classList.add("hidden");
   $("end").classList.remove("hidden");
   if(window.SFX) window.SFX.play("win");
-  const [a, b] = teams;
-  $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
-  $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
-  if(a.score === b.score){
-    $("endTitle").textContent = "🤝 تعادل!";
+
+  if(playMode === "solo"){
+    $("endTitle").textContent = "📊 النتيجة النهائية";
     $("winAv").classList.add("hidden");
-    $("winName").textContent = "نتيجة متساوية";
+    $("winName").textContent = teams[0].name;
+    $("finalTwo").classList.add("hidden");
+    $("finalSolo").classList.remove("hidden");
+    $("soloRight").textContent = soloStats.right;
+    $("soloWrong").textContent = soloStats.wrong;
+    $("soloScore").textContent = soloStats.score;
   } else {
-    const w = a.score > b.score ? a : b;
-    $("endTitle").textContent = "🏆 الفائز";
-    $("winAv").classList.remove("hidden");
-    $("winAv").src = w.avatar;
-    $("winName").textContent = w.name;
+    const [a, b] = teams;
+    $("finalTwo").classList.remove("hidden");
+    $("finalSolo").classList.add("hidden");
+    $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
+    $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
+    if(a.score === b.score){
+      $("endTitle").textContent = "🤝 تعادل!";
+      $("winAv").classList.add("hidden");
+      $("winName").textContent = "نتيجة متساوية";
+    } else {
+      const w = a.score > b.score ? a : b;
+      $("endTitle").textContent = "🏆 الفائز";
+      $("winAv").classList.remove("hidden");
+      $("winAv").src = w.avatar;
+      $("winName").textContent = w.name;
+    }
   }
 }
 
-/* ============ الأزرار مع الأصوات ============ */
+/* ---------- الأزرار مع الأصوات ---------- */
 const sfx = (n) => { if(window.SFX) window.SFX.play(n); };
 
 $("pauseBtn").onclick      = () => { sfx("click"); toggleTimer(); };
@@ -645,22 +987,21 @@ $("nextBtn").onclick       = () => { sfx("click"); nextQuestion(); };
 $("award1").onclick        = () => { sfx("click"); award(0); };
 $("award2").onclick        = () => { sfx("click"); award(1); };
 $("award0").onclick        = () => { sfx("click"); award(-1); };
+$("soloCheckBtn").onclick  = () => { sfx("click"); soloCheck(); };
 $("againBtn").onclick      = () => {
   sfx("click");
   $("end").classList.add("hidden");
   $("setup").classList.remove("hidden");
 };
-$("startBtn").onclick = (() => {
-  const orig = $("startBtn").onclick;
-  return function(e){
-    sfx("go");
-    if(orig) return orig.call(this, e);
-  };
-})();
+
+// ضغط Enter في حقل الإجابة = تحقق
+$("soloInput").addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){ e.preventDefault(); soloCheck(); }
+});
+
 /* =====================================================
-   التشغيل
+   زر كتم الصوت
    ===================================================== */
-/* ============ زر كتم الصوت ============ */
 (function initSoundToggle(){
   const btn = $("soundToggle");
   if(!btn || !window.SFX) return;
@@ -675,6 +1016,9 @@ $("startBtn").onclick = (() => {
   };
 })();
 
+/* =====================================================
+   التشغيل
+   ===================================================== */
 (async function boot(){
   await loadGameData();
   initUI();

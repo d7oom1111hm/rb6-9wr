@@ -41,7 +41,8 @@ textarea{resize:vertical;min-height:70px}
 .btn-danger{background:rgba(184,92,92,.12);border:1px solid var(--danger);color:var(--danger)}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
 
 .q-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
 .q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -73,6 +74,20 @@ a{color:var(--accent)}
   background:var(--panel);border:1px solid var(--line);color:var(--text);
 }
 .top-nav a.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* تابات الداشبورد */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;border-bottom:2px solid var(--line);padding-bottom:0}
+.tab{
+  padding:12px 22px;border-radius:12px 12px 0 0;font-size:15px;font-weight:700;
+  background:transparent;color:var(--muted);border:none;cursor:pointer;
+  transition:.15s;position:relative;bottom:-2px;
+}
+.tab:hover{background:rgba(58,53,47,.04);color:var(--text)}
+.tab.active{background:var(--panel);color:var(--accent);border-bottom:3px solid var(--accent)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+.solo-badge{background:rgba(109,139,116,.15);color:var(--accent);padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;margin-right:8px}
 </style>
 </head>
 <body>
@@ -81,12 +96,12 @@ a{color:var(--accent)}
   <div class="top-nav">
     <div>
       <h1>⚙️ داشبورد تحدي الصورة</h1>
-      <p class="sub">إدارة لعبة تحدي الصورة الواحدة</p>
+      <p class="sub">إدارة لعبة تحدي الصورة</p>
     </div>
     <div class="links">
       <a href="index.html">🏠 الرئيسية</a>
-      <a href="link-dashboard.html">🔗 داشبورد ربط الصور</a>
-      <a href="single-dashboard.html" class="active">🖼️ داشبورد تحدي الصورة</a>
+      <a href="link-dashboard.html">🔗 ربط الصور</a>
+      <a href="single-dashboard.html" class="active">🖼️ تحدي الصورة</a>
     </div>
   </div>
 
@@ -113,77 +128,129 @@ a{color:var(--accent)}
     </div>
     <label>GitHub Token (Fine-grained — Contents: Read and write)</label>
     <input type="password" id="cfgToken" placeholder="github_pat_xxxxxxxxxxxx">
-    <p class="hint-txt">
-      ⚠️ التوكن يُحفظ في متصفحك فقط. لا تشاركه مع أحد.
-    </p>
+    <p class="hint-txt">⚠️ التوكن يُحفظ في متصفحك فقط. لا تشاركه مع أحد.</p>
     <div class="row">
       <button class="btn btn-primary" id="saveCfg">💾 حفظ الإعدادات</button>
       <button class="btn btn-ghost" id="clearCfg">🗑 مسح الإعدادات</button>
     </div>
   </div>
 
-  <!-- ============ إعدادات اللعبة ============ -->
-  <div class="card">
-    <h2>🎮 إعدادات اللعبة</h2>
-    <div class="grid2">
-      <div>
-        <label>مدة دورة شريط الوقت (ثانية)</label>
-        <input type="number" id="cfBarCycle" value="30" min="5">
-      </div>
-      <div>
-        <label>عدد الأسئلة في المباراة</label>
-        <input type="number" id="cfQCount" value="15" min="1">
-      </div>
-      <div>
-        <label>نقاط كل سؤال</label>
-        <input type="number" id="cfPoints" value="1" min="1">
-      </div>
-      <div>
-        <label>ترتيب عشوائي للأسئلة؟</label>
-        <select id="cfShuffle">
-          <option value="false">لا</option>
-          <option value="true">نعم</option>
-        </select>
-      </div>
-      <div>
-        <label>اسم الفريق الأول الافتراضي</label>
-        <input type="text" id="cfTeam1" value="الفريق الأول">
-      </div>
-      <div>
-        <label>اسم الفريق الثاني الافتراضي</label>
-        <input type="text" id="cfTeam2" value="الفريق الثاني">
-      </div>
-    </div>
+  <!-- ============ تابات ============ -->
+  <div class="tabs">
+    <button class="tab active" data-tab="team">🎮 وضع الفريقين</button>
+    <button class="tab" data-tab="solo">✍️ الوضع الفردي</button>
+    <button class="tab" data-tab="save">💾 الحفظ والتحميل</button>
   </div>
 
-  <!-- ============ الصور الرمزية ============ -->
-  <div class="card">
-    <h2>🖼️ الصور الرمزية الجاهزة</h2>
-    <div id="avatarsList"></div>
-    <div class="row">
-      <button class="btn btn-ghost" id="addAvatar">➕ إضافة صورة رمزية</button>
+  <!-- ============ تاب وضع الفريقين ============ -->
+  <div class="tab-content active" id="tab-team">
+
+    <div class="card">
+      <h2>🎮 إعدادات الفريقين</h2>
+      <div class="grid2">
+        <div>
+          <label>مدة دورة شريط الوقت (ثانية)</label>
+          <input type="number" id="cfBarCycle" value="30" min="5">
+        </div>
+        <div>
+          <label>عدد الأسئلة في المباراة</label>
+          <input type="number" id="cfQCount" value="15" min="1">
+        </div>
+        <div>
+          <label>نقاط كل سؤال</label>
+          <input type="number" id="cfPoints" value="1" min="1">
+        </div>
+        <div>
+          <label>ترتيب عشوائي للأسئلة؟</label>
+          <select id="cfShuffle">
+            <option value="false">لا</option>
+            <option value="true">نعم</option>
+          </select>
+        </div>
+        <div>
+          <label>اسم الفريق الأول الافتراضي</label>
+          <input type="text" id="cfTeam1" value="الفريق الأول">
+        </div>
+        <div>
+          <label>اسم الفريق الثاني الافتراضي</label>
+          <input type="text" id="cfTeam2" value="الفريق الثاني">
+        </div>
+      </div>
     </div>
+
+    <div class="card">
+      <h2>🖼️ الصور الرمزية الجاهزة</h2>
+      <div id="avatarsList"></div>
+      <div class="row">
+        <button class="btn btn-ghost" id="addAvatar">➕ إضافة صورة رمزية</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ============ الأسئلة ============ -->
-  <div class="card">
-    <h2>❓ الأسئلة</h2>
+  <!-- ============ تاب الوضع الفردي ============ -->
+  <div class="tab-content" id="tab-solo">
+
+    <div class="card">
+      <h2>✍️ إعدادات الوضع الفردي</h2>
+      <p class="hint-txt" style="margin-bottom:14px">
+        الوضع الفردي يتيح للاعب واحد كتابة إجابته والتحقق منها. نفس أسئلة تحدي الصورة.
+      </p>
+      <div class="grid3">
+        <div>
+          <label>تفعيل الوضع الفردي؟</label>
+          <select id="cfSoloEnabled">
+            <option value="true">مفعّل</option>
+            <option value="false">معطّل</option>
+          </select>
+        </div>
+        <div>
+          <label>عدد المحاولات لكل سؤال</label>
+          <input type="number" id="cfSoloTries" value="3" min="1" max="10">
+        </div>
+        <div>
+          <label>النقاط لكل إجابة صحيحة</label>
+          <input type="number" id="cfSoloPoints" value="1" min="1">
+        </div>
+        <div>
+          <label>نوع المطابقة</label>
+          <select id="cfSoloMatch">
+            <option value="flexible">مرن (يتجاهل الهمزات والتشكيل)</option>
+            <option value="strict">دقيق (مطابقة تامة)</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint-txt" style="margin-top:12px">
+        💡 النقاط والمحاولات تُطبَّق على اللعبة كلها. إعدادات الإجابات البديلة تكون لكل سؤال في التاب الرئيسي.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ============ تاب الأسئلة (مشترك) ============ -->
+  <div class="card" id="questionsCard">
+    <h2>❓ الأسئلة <span class="solo-badge">مشتركة بين الوضعين</span></h2>
+    <p class="hint-txt" style="margin-bottom:14px">
+      نفس الأسئلة تُستخدم في وضع الفريقين والوضع الفردي. الإجابات البديلة تظهر في الوضع الفردي فقط.
+    </p>
     <div id="questionsList"></div>
     <div class="row">
       <button class="btn btn-ghost" id="addQuestion">➕ إضافة سؤال</button>
     </div>
   </div>
 
-  <!-- ============ الأزرار الرئيسية ============ -->
-  <div class="card">
-    <h2>💾 الحفظ والتحميل</h2>
-    <div class="row">
-      <button class="btn btn-gold" id="loadBtn">⬇️ تحميل من GitHub</button>
-      <button class="btn btn-primary" id="saveBtn">⬆️ حفظ على GitHub</button>
-      <button class="btn btn-purple" id="exportBtn">📤 تصدير JSON</button>
-      <button class="btn btn-ghost" id="importBtn">📥 استيراد JSON</button>
-      <input type="file" id="importFile" accept=".json" class="hidden">
-      <span class="status" id="status"></span>
+  <!-- ============ تاب الحفظ والتحميل ============ -->
+  <div class="tab-content" id="tab-save">
+    <div class="card">
+      <h2>💾 الحفظ والتحميل</h2>
+      <div class="row">
+        <button class="btn btn-gold" id="loadBtn">⬇️ تحميل من GitHub</button>
+        <button class="btn btn-primary" id="saveBtn">⬆️ حفظ على GitHub</button>
+        <button class="btn btn-purple" id="exportBtn">📤 تصدير JSON</button>
+        <button class="btn btn-ghost" id="importBtn">📥 استيراد JSON</button>
+        <input type="file" id="importFile" accept=".json" class="hidden">
+        <span class="status" id="status"></span>
+      </div>
     </div>
   </div>
 
@@ -202,7 +269,11 @@ let data = {
     QUESTIONS_COUNT: 15,
     SHUFFLE_QUESTIONS: false,
     DEFAULT_TEAM_NAMES: ["الفريق الأول", "الفريق الثاني"],
-    POINTS_PER_QUESTION: 1
+    POINTS_PER_QUESTION: 1,
+    SOLO_MODE_ENABLED: true,
+    SOLO_TRIES: 3,
+    SOLO_POINTS: 1,
+    SOLO_MATCH_MODE: "flexible"
   },
   avatars: [],
   questions: []
@@ -222,6 +293,17 @@ function setStatus(msg, cls){
   s.textContent = msg;
   s.className = "status" + (cls ? " " + cls : "");
 }
+
+/* ============ التابات ============ */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+    tab.classList.add("active");
+    const id = "tab-" + tab.dataset.tab;
+    $(id).classList.add("active");
+  };
+});
 
 /* ============ إعدادات GitHub ============ */
 function loadCfg(){
@@ -286,6 +368,12 @@ async function loadFromGitHub(){
     const j = await r.json();
     sha = j.sha;
     data = JSON.parse(b64decode(j.content));
+    // ضمان وجود الحقول الجديدة
+    if(!data.config) data.config = {};
+    if(data.config.SOLO_MODE_ENABLED === undefined) data.config.SOLO_MODE_ENABLED = true;
+    if(data.config.SOLO_TRIES === undefined) data.config.SOLO_TRIES = 3;
+    if(data.config.SOLO_POINTS === undefined) data.config.SOLO_POINTS = 1;
+    if(data.config.SOLO_MATCH_MODE === undefined) data.config.SOLO_MATCH_MODE = "flexible";
     fillConfigUI();
     renderAll();
     setStatus("✅ تم التحميل", "ok");
@@ -344,6 +432,11 @@ function fillConfigUI(){
   $("cfShuffle").value = String(c.SHUFFLE_QUESTIONS ?? false);
   $("cfTeam1").value = (c.DEFAULT_TEAM_NAMES && c.DEFAULT_TEAM_NAMES[0]) || "الفريق الأول";
   $("cfTeam2").value = (c.DEFAULT_TEAM_NAMES && c.DEFAULT_TEAM_NAMES[1]) || "الفريق الثاني";
+  // الوضع الفردي
+  $("cfSoloEnabled").value = String(c.SOLO_MODE_ENABLED ?? true);
+  $("cfSoloTries").value = c.SOLO_TRIES ?? 3;
+  $("cfSoloPoints").value = c.SOLO_POINTS ?? 1;
+  $("cfSoloMatch").value = c.SOLO_MATCH_MODE || "flexible";
 }
 function collectConfigUI(){
   data.config = {
@@ -351,7 +444,11 @@ function collectConfigUI(){
     QUESTIONS_COUNT: parseInt($("cfQCount").value) || 15,
     POINTS_PER_QUESTION: parseInt($("cfPoints").value) || 1,
     SHUFFLE_QUESTIONS: $("cfShuffle").value === "true",
-    DEFAULT_TEAM_NAMES: [$("cfTeam1").value.trim() || "الفريق الأول", $("cfTeam2").value.trim() || "الفريق الثاني"]
+    DEFAULT_TEAM_NAMES: [$("cfTeam1").value.trim() || "الفريق الأول", $("cfTeam2").value.trim() || "الفريق الثاني"],
+    SOLO_MODE_ENABLED: $("cfSoloEnabled").value === "true",
+    SOLO_TRIES: parseInt($("cfSoloTries").value) || 3,
+    SOLO_POINTS: parseInt($("cfSoloPoints").value) || 1,
+    SOLO_MATCH_MODE: $("cfSoloMatch").value || "flexible"
   };
 }
 
@@ -386,6 +483,7 @@ function renderQuestions(){
   (data.questions || []).forEach((q, i) => {
     const card = document.createElement("div");
     card.className = "q-card";
+    const altsStr = Array.isArray(q.alternatives) ? q.alternatives.join(", ") : "";
     card.innerHTML = `
       <div class="q-head">
         <div class="q-num">${i+1}</div>
@@ -410,12 +508,19 @@ function renderQuestions(){
         <img src="${(q.image||'').replace(/"/g,'&quot;')}" onerror="this.style.opacity='.25'">
         <input type="text" data-field="image" data-i="${i}" value="${(q.image||'').replace(/"/g,'&quot;')}" placeholder="رابط الصورة">
       </div>
+      <label style="margin-top:12px">الإجابات البديلة <span class="solo-badge">للوضع الفردي</span></label>
+      <input type="text" data-field="alternatives" data-i="${i}" value="${altsStr.replace(/"/g,'&quot;')}" placeholder="مثال: رياض, Riyadh, Ar Riyadh (مفصولة بفواصل)">
     `;
     card.querySelectorAll("[data-field]").forEach(inp => {
       inp.oninput = e => {
-        q[e.target.dataset.field] = e.target.value;
-        if(e.target.dataset.field === "image"){
-          card.querySelector(".img-input img").src = e.target.value;
+        const field = e.target.dataset.field;
+        if(field === "alternatives"){
+          q.alternatives = e.target.value.split(",").map(s => s.trim()).filter(s => s);
+        } else {
+          q[field] = e.target.value;
+          if(field === "image"){
+            card.querySelector(".img-input img").src = e.target.value;
+          }
         }
       };
     });
@@ -431,7 +536,7 @@ function renderQuestions(){
 }
 $("addQuestion").onclick = () => {
   data.questions = data.questions || [];
-  data.questions.push({ answer:"", hint:"", image:"" });
+  data.questions.push({ answer:"", hint:"", image:"", alternatives:[] });
   renderQuestions();
 };
 

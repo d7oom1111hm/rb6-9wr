@@ -184,7 +184,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         <input type="text" id="name2" maxlength="18" placeholder="اسم الفريق الثاني">
       </div>
     </div>
-    <div class="start-row"><button class="btn btn-primary" id="startBtn">▶ ابدأ المباراة</button></div>
+    <div class="start-row"><button class="btn btn-primary" id="startBtn" onclick="if(window.SFX)window.SFX.play('go')">▶ ابدأ المباراة</button></div>
     <div class="rules" id="rulesBox">
       مؤقت يبدأ من الصفر بلا حد (إيقاف / استئناف / إعادة)<br>
       النقاط تتناقص كلما فتحت صورًا أكثر
@@ -267,9 +267,13 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
+<!-- زر كتم الصوت -->
+<button id="soundToggle" title="كتم الصوت" style="position:fixed;bottom:18px;left:18px;z-index:200;width:52px;height:52px;border-radius:50%;font-size:22px;background:#fbf7ef;border:1px solid rgba(58,53,47,.15);box-shadow:0 4px 14px rgba(58,53,47,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s">🔊</button>
+
+<script src="sounds.js"></script>
 <script>
 /* =====================================================
-   الإعدادات الافتراضية (تُستبدل من questions.json)
+   الإعدادات الافتراضية (تُستبدل من questions-link.json)
    ===================================================== */
 let CONFIG = {
   BAR_CYCLE_SECONDS: 30,
@@ -284,7 +288,7 @@ let AVATARS = [];
 let QUESTIONS = [];
 
 /* =====================================================
-   تحميل البيانات من questions.json
+   تحميل البيانات من questions-link.json
    ===================================================== */
 async function loadGameData(){
   try{
@@ -295,10 +299,8 @@ async function loadGameData(){
     AVATARS = j.avatars || [];
     QUESTIONS = j.questions || [];
   }catch(e){
-    console.warn("تعذّر تحميل questions.json، سيتم استخدام البيانات الافتراضية:", e);
-    QUESTIONS = [
-      { answer:"مثال", emoji:"❓", images:["","","",""] }
-    ];
+    console.warn("تعذّر تحميل questions-link.json:", e);
+    QUESTIONS = [{ answer:"مثال", emoji:"❓", images:["","","",""] }];
   }
 }
 
@@ -333,20 +335,11 @@ let elapsedMs = 0, running = false, lastTick = 0;
 function initUI(){
   $("av1").src = DEF_AV[0];
   $("av2").src = DEF_AV[1];
-
   $("loadingMsg").classList.add("hidden");
   $("teamsSetup").classList.remove("hidden");
-
-  // تحديث قواعد اللعبة حسب الإعدادات
   $("rulesBox").innerHTML =
     `${CONFIG.QUESTIONS_COUNT} سؤالًا • 4 صور مغطاة • مؤقت بلا حد (إيقاف / استئناف / إعادة)<br>` +
     `النقاط حسب عدد الصور المفتوحة: ${CONFIG.POINTS.join(" → ")}`;
-
-  // لو ما فيه صور رمزية، نخفي نافذة الاختيار
-  if(!AVATARS.length){
-    $("pick1").onclick = null;
-    $("pick2").onclick = null;
-  }
 }
 
 function openPicker(idx){
@@ -506,6 +499,7 @@ function openImage(i){
   const cards = $("grid").children;
   if(cards[i].classList.contains("open")) return;
   cards[i].classList.add("open");
+  if(window.SFX) window.SFX.play("reveal");
   opened++;
   if(opened >= 4) $("openBtn").disabled = true;
   updatePtsUI();
@@ -521,6 +515,7 @@ function revealAnswer(byTimeout){
   if(qState !== "playing") return;
   qState = "revealed";
   running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
+  if(window.SFX) window.SFX.play("reveal");
   [...$("grid").children].forEach(c => c.classList.add("revealed"));
   const q = quiz[qi], pts = curPoints();
   $("ansText").textContent = (q.emoji ? q.emoji + " " : "") + q.answer;
@@ -538,6 +533,7 @@ function award(idx){
   const pts = curPoints();
   if(idx >= 0){
     teams[idx].score += pts; updateScores(idx);
+    if(window.SFX) window.SFX.play("success");
     $("awardDone").textContent = `🎉 ${teams[idx].name} حصل على ${pts} نقطة`;
   } else {
     $("awardDone").textContent = "لم تُحتسب نقاط لهذا السؤال";
@@ -562,6 +558,7 @@ function endGame(){
   clearInterval(timerId);
   $("game").classList.add("hidden");
   $("end").classList.remove("hidden");
+  if(window.SFX) window.SFX.play("win");
   const [a, b] = teams;
   $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
   $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
@@ -578,22 +575,40 @@ function endGame(){
   }
 }
 
-/* =====================================================
-   ربط الأزرار
-   ===================================================== */
-$("pauseBtn").onclick      = toggleTimer;
-$("resetTimerBtn").onclick = resetTimer;
-$("openBtn").onclick   = openNext;
-$("revealBtn").onclick = () => revealAnswer(false);
-$("skipBtn").onclick   = skipQuestion;
-$("nextBtn").onclick   = nextQuestion;
-$("award1").onclick    = () => award(0);
-$("award2").onclick    = () => award(1);
-$("award0").onclick    = () => award(-1);
-$("againBtn").onclick  = () => {
+/* ---------- الأزرار مع الأصوات ---------- */
+const sfx = (n) => { if(window.SFX) window.SFX.play(n); };
+
+$("pauseBtn").onclick      = () => { sfx("click"); toggleTimer(); };
+$("resetTimerBtn").onclick = () => { sfx("click"); resetTimer(); };
+$("openBtn").onclick       = () => { sfx("click"); openNext(); };
+$("revealBtn").onclick     = () => { sfx("click"); revealAnswer(false); };
+$("skipBtn").onclick       = () => { sfx("click"); skipQuestion(); };
+$("nextBtn").onclick       = () => { sfx("click"); nextQuestion(); };
+$("award1").onclick        = () => { sfx("click"); award(0); };
+$("award2").onclick        = () => { sfx("click"); award(1); };
+$("award0").onclick        = () => { sfx("click"); award(-1); };
+$("againBtn").onclick      = () => {
+  sfx("click");
   $("end").classList.add("hidden");
   $("setup").classList.remove("hidden");
 };
+
+/* =====================================================
+   زر كتم الصوت
+   ===================================================== */
+(function initSoundToggle(){
+  const btn = $("soundToggle");
+  if(!btn || !window.SFX) return;
+  function paint(){
+    btn.textContent = window.SFX.isEnabled() ? "🔊" : "🔇";
+    btn.title = window.SFX.isEnabled() ? "كتم الصوت" : "تشغيل الصوت";
+  }
+  paint();
+  btn.onclick = () => {
+    window.SFX.toggle();
+    paint();
+  };
+})();
 
 /* =====================================================
    التشغيل
