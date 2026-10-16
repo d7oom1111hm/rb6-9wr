@@ -3,605 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>تحدي الصور</title>
+<title>مسابقات الصور</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <style>
 :root{
-  --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
-  --accent:#6d8b74; --accent2:#a98467; --gold:#c9a227;
-  --text:#3a352f; --muted:#8a8072; --danger:#b85c5c; --ok:#6d8b74;
-  --line:rgba(58,53,47,.12);
+  --bg:#f5f1e8; --panel:#fffaf0; --panel2:#ebe4d5;
+  --accent:#5c7a63; --accent2:#a98467; --gold:#c9a227;
+  --text:#2f2b26; --muted:#877a68; --line:rgba(47,43,38,.10);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
 body{
-  background:radial-gradient(1000px 600px at 80% -10%,rgba(169,132,103,.18),transparent 60%),
-             radial-gradient(900px 500px at 10% 110%,rgba(109,139,116,.15),transparent 60%),var(--bg);
-  color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;
+  background:
+    radial-gradient(1100px 600px at 85% -5%,rgba(169,132,103,.18),transparent 55%),
+    radial-gradient(900px 500px at 5% 105%,rgba(92,122,99,.15),transparent 55%),
+    radial-gradient(600px 400px at 50% 50%,rgba(201,162,39,.05),transparent 70%),
+    var(--bg);
+  color:var(--text);
+  font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;
   min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 16px;
 }
-button{font-family:inherit;cursor:pointer;border:none;color:inherit}
-.hidden{display:none!important}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
+.hero{text-align:center;margin-bottom:50px;max-width:720px}
+.hero h1{
+  font-size:clamp(34px,7vw,64px);
+  color:var(--text);
+  letter-spacing:1px;
+  line-height:1.2;
+  margin-bottom:14px;
+}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);font-size:clamp(15px,2.3vw,18px);line-height:1.7;max-width:560px;margin:0 auto}
+.hero .deco-line{width:80px;height:3px;background:var(--gold);margin:22px auto 0;border-radius:99px;opacity:.7}
 
-/* ---------- Setup ---------- */
-#setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}
-.setup-card{width:100%;max-width:760px;background:var(--panel);
-  border:1px solid var(--line);border-radius:22px;padding:28px;
-  box-shadow:0 10px 40px rgba(58,53,47,.10)}
-.logo{text-align:center;margin-bottom:22px}
-.logo h1{font-size:clamp(28px,6vw,46px);color:var(--accent);letter-spacing:1px}
-.logo p{color:var(--muted);margin-top:6px}
-.teams-setup{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.team-box{background:rgba(58,53,47,.03);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center}
-.team-box.t1{border-color:rgba(109,139,116,.45)}
-.team-box.t2{border-color:rgba(169,132,103,.5)}
-.avatar-pick{width:96px;height:96px;border-radius:50%;margin:0 auto 12px;overflow:hidden;position:relative;
-  border:3px solid var(--accent);background:#fff;cursor:pointer;display:block}
-.t2 .avatar-pick{border-color:var(--accent2)}
-.avatar-pick img{width:100%;height:100%;object-fit:cover;display:block}
-.avatar-pick span{position:absolute;inset:auto 0 0 0;background:rgba(58,53,47,.55);color:#fff;font-size:11px;padding:3px 0}
-.team-box input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
-  background:#fff;color:var(--text);font-size:16px;text-align:center;font-family:inherit}
-.team-box input[type=text]:focus{outline:2px solid var(--accent)}
-.btn{padding:12px 22px;border-radius:12px;font-size:16px;font-weight:700;transition:.15s transform,.15s filter,.15s opacity}
-.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-gold{background:var(--gold);color:#3a352f}
-.btn-ghost{background:rgba(58,53,47,.06);border:1px solid var(--line)}
-.btn-danger{background:rgba(184,92,92,.12);border:1px solid var(--danger);color:var(--danger)}
-.start-row{margin-top:24px;text-align:center}
-.start-row .btn{font-size:20px;padding:14px 46px}
-.rules{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.9;text-align:center}
-.loading-msg{text-align:center;color:var(--muted);padding:8px;font-size:14px}
+.games-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:26px;
+  max-width:960px;
+  width:100%;
+}
 
-/* ---------- Avatar Picker Modal ---------- */
-#avatarPicker{position:fixed;inset:0;z-index:100;background:rgba(58,53,47,.55);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;padding:16px}
-.picker-card{width:100%;max-width:640px;background:var(--panel);
-  border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);
-  max-height:88vh;overflow:auto}
-.picker-card h3{text-align:center;margin-bottom:14px;color:var(--accent);font-size:20px}
-.picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.picker-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;cursor:pointer;
-  border:3px solid var(--line);transition:.15s;background:#fff}
-.picker-grid img:hover{border-color:var(--gold);transform:scale(1.07)}
-.picker-close{display:block;margin:16px auto 0}
+.game-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:34px 28px 26px;
+  text-align:center;
+  box-shadow:0 8px 32px rgba(47,43,38,.08);
+  transition:transform .25s,box-shadow .25s;
+  position:relative;
+  overflow:hidden;
+}
+.game-card::before{
+  content:"";
+  position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+}
+.game-card.single::before{
+  background:linear-gradient(90deg,#4a4a4a,var(--gold));
+}
+.game-card:hover{
+  transform:translateY(-6px);
+  box-shadow:0 16px 44px rgba(47,43,38,.14);
+}
+.game-icon{
+  width:96px;height:96px;border-radius:22px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;
+  margin:0 auto 20px;
+  background:linear-gradient(160deg,rgba(92,122,99,.14),rgba(169,132,103,.10));
+  border:1px solid var(--line);
+}
+.game-card.single .game-icon{
+  background:linear-gradient(160deg,rgba(74,74,74,.14),rgba(201,162,39,.10));
+}
+.game-card h2{
+  font-size:24px;margin-bottom:10px;color:var(--text);
+}
+.game-card .desc{
+  color:var(--muted);font-size:15px;line-height:1.75;
+  min-height:52px;margin-bottom:24px;
+}
+.actions{display:flex;flex-direction:column;gap:10px}
+.btn{
+  display:block;width:100%;
+  padding:14px 20px;
+  border-radius:13px;
+  font-size:16px;font-weight:700;
+  text-decoration:none;
+  transition:.15s transform,.15s filter;
+  border:none;cursor:pointer;
+  font-family:inherit;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn-play{
+  background:var(--accent);color:#fff;
+  box-shadow:0 4px 14px rgba(92,122,99,.30);
+}
+.game-card.single .btn-play{
+  background:#3a3a3a;
+  box-shadow:0 4px 14px rgba(74,74,74,.30);
+}
+.btn-dash{
+  background:rgba(47,43,38,.05);
+  border:1px solid var(--line);
+  color:var(--text);font-size:14px;padding:11px 18px;
+}
+.btn-dash:hover{background:rgba(47,43,38,.09)}
 
-/* ---------- Scoreboard ---------- */
-.scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:18px;padding:12px 16px;position:sticky;top:8px;z-index:10;
-  box-shadow:0 6px 25px rgba(58,53,47,.10)}
-.sb-team{display:flex;align-items:center;gap:12px;min-width:0}
-.sb-team.right{justify-content:flex-start}
-.sb-team.left{justify-content:flex-end;flex-direction:row-reverse}
-.sb-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);flex:none;background:#fff}
-.left .sb-avatar{border-color:var(--accent2)}
-.sb-info{min-width:0}
-.sb-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22vw}
-.sb-score{font-size:28px;font-weight:800;color:var(--gold);line-height:1.1}
-.sb-score.bump{animation:bump .5s}
-@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.3);color:var(--accent)}100%{transform:scale(1)}}
-.sb-mid{text-align:center}
-.sb-mid .qn{font-size:13px;color:var(--muted)}
-.sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent)}
+.footer{
+  margin-top:44px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
 
-/* ---------- Game ---------- */
-.timer-wrap{margin:14px 0 4px;display:flex;align-items:center;gap:12px}
-.timer-bar{flex:1;height:14px;border-radius:99px;background:rgba(58,53,47,.08);overflow:hidden;border:1px solid var(--line)}
-.timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent);
-  transition:width .25s linear,background .3s}
-.timer-num{font-size:24px;font-weight:800;min-width:64px;text-align:center;color:var(--accent);font-variant-numeric:tabular-nums;direction:ltr}
-.tbtn{padding:8px 14px;font-size:14px;white-space:nowrap}
-.timer-num.warn{color:var(--gold)} .timer-num.danger{color:var(--danger)}
-.hint-line{text-align:center;color:var(--muted);margin:10px 0 14px;font-size:15px}
-.hint-line b{color:var(--gold)}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:#fff;
-  border:2px solid var(--line);box-shadow:0 6px 20px rgba(58,53,47,.12)}
-.card img{width:100%;height:100%;object-fit:cover;display:block}
-.card.open,.card.revealed{border-color:var(--accent);box-shadow:0 0 18px rgba(109,139,116,.30)}
-.card:not(.open):not(.revealed){cursor:pointer}
-.card:not(.open):not(.revealed):hover{border-color:var(--gold);transform:translateY(-3px)}
-.card{transition:transform .2s,border-color .3s,box-shadow .3s}
-.cover{position:absolute;inset:0;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(6,1fr);z-index:2;overflow:hidden}
-.tile{background:hsl(var(--h) var(--s) var(--l));border:1px solid rgba(255,255,255,.25);
-  transform-origin:center;transition:transform .5s cubic-bezier(.5,0,.2,1),opacity .5s;
-  transition-delay:var(--d);animation:tilePulse 3s ease-in-out infinite;animation-delay:var(--p)}
-@keyframes tilePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.10)}}
-.cover::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);
-  transform:translateX(-120%);animation:sweep 3.2s ease-in-out infinite}
-@keyframes sweep{to{transform:translateX(120%)}}
-.qmark{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  pointer-events:none;transition:opacity .35s,transform .35s}
-.qmark b{font-size:clamp(44px,9vw,76px);color:#fff;text-shadow:0 2px 10px rgba(58,53,47,.5);line-height:1}
-.qmark small{color:#fff;background:rgba(58,53,47,.55);border:1px solid rgba(255,255,255,.6);border-radius:99px;padding:2px 12px;margin-top:6px;font-size:12px}
-.card.open .tile,.card.revealed .tile{transform:perspective(200px) rotateY(95deg) scale(.2);opacity:0;animation:none}
-.card.open .cover,.card.revealed .cover{pointer-events:none}
-.card.open .cover::after,.card.revealed .cover::after{display:none}
-.card.open .qmark,.card.revealed .qmark{opacity:0;transform:scale(1.8)}
-.card .tag{z-index:4;position:absolute;top:10px;right:10px;background:rgba(251,247,239,.9);color:var(--accent);
-  border:1px solid var(--accent);border-radius:99px;padding:2px 12px;font-weight:700;font-size:14px}
-.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0}
-.answer-panel{background:linear-gradient(160deg,rgba(201,162,39,.10),rgba(109,139,116,.10));
-  border:2px solid var(--gold);border-radius:18px;padding:18px;text-align:center;margin-bottom:14px;
-  animation:pop .35s}
-@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
-.answer-panel .ans{font-size:clamp(28px,6vw,44px);font-weight:800;color:var(--accent)}
-.answer-panel .sub{color:var(--muted);margin:6px 0 14px}
-.award{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.award .btn{min-width:150px}
-.award-done{color:var(--ok);font-weight:700;font-size:18px}
-
-/* ---------- End ---------- */
-#end{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-.end-card{width:100%;max-width:640px;text-align:center;background:var(--panel);
-  border:1px solid rgba(201,162,39,.5);border-radius:22px;padding:30px;box-shadow:0 10px 40px rgba(201,162,39,.15)}
-.end-card h2{font-size:32px;color:var(--gold);margin-bottom:6px}
-.winner-avatar{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);margin:14px auto;display:block;
-  box-shadow:0 0 25px rgba(201,162,39,.35)}
-.final{display:flex;justify-content:center;gap:30px;margin:16px 0 24px;flex-wrap:wrap}
-.final div{background:rgba(58,53,47,.04);padding:12px 22px;border-radius:14px;min-width:140px}
-.final b{display:block;font-size:28px;color:var(--accent)}
-
-@media (max-width:640px){
-  .teams-setup{grid-template-columns:1fr}
-  .sb-avatar{width:42px;height:42px}
-  .sb-score{font-size:22px}
-  .sb-name{font-size:13px;max-width:26vw}
-  .scoreboard{padding:8px 10px;gap:6px}
-  .grid{gap:8px}
-  .btn{padding:11px 16px;font-size:15px}
-  .picker-grid{grid-template-columns:repeat(3,1fr)}
+@media (max-width:720px){
+  .games-grid{grid-template-columns:1fr;gap:18px}
+  .hero{margin-bottom:34px}
+  .game-card{padding:26px 20px 20px}
+  .game-icon{width:78px;height:78px;font-size:38px;border-radius:18px}
 }
 </style>
 </head>
 <body>
 
-<!-- ============ شاشة الإعداد ============ -->
-<section id="setup">
-  <div class="setup-card">
-    <div class="logo">
-      <h1>🎯 تحدي الصور</h1>
-      <p>افتح الصور بحكمة… كلما فتحت صورًا أكثر قلّت النقاط!</p>
-    </div>
-    <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
-    <div class="teams-setup" id="teamsSetup">
-      <div class="team-box t1">
-        <div class="avatar-pick" id="pick1" title="اضغط لاختيار صورة">
-          <img id="av1" alt="">
-          <span>اختر صورة</span>
-        </div>
-        <input type="text" id="name1" maxlength="18" placeholder="اسم الفريق الأول">
-      </div>
-      <div class="team-box t2">
-        <div class="avatar-pick" id="pick2" title="اضغط لاختيار صورة">
-          <img id="av2" alt="">
-          <span>اختر صورة</span>
-        </div>
-        <input type="text" id="name2" maxlength="18" placeholder="اسم الفريق الثاني">
-      </div>
-    </div>
-    <div class="start-row"><button class="btn btn-primary" id="startBtn">▶ ابدأ المباراة</button></div>
-    <div class="rules" id="rulesBox">
-      مؤقت يبدأ من الصفر بلا حد (إيقاف / استئناف / إعادة)<br>
-      النقاط تتناقص كلما فتحت صورًا أكثر
-    </div>
-  </div>
-</section>
-
-<!-- ============ نافذة اختيار الصورة الرمزية ============ -->
-<div id="avatarPicker" class="hidden">
-  <div class="picker-card">
-    <h3>اختر صورة الفريق</h3>
-    <div class="picker-grid" id="pickerGrid"></div>
-    <button class="btn btn-ghost picker-close" id="pickerClose">إلغاء</button>
-  </div>
+<div class="hero">
+  <h1>مسابقات <span>الصور</span></h1>
+  <p>اختر التحدي الذي تريد لعبه، واستمتع بجو من الحماس بين الفريقين</p>
+  <div class="deco-line"></div>
 </div>
 
-<!-- ============ شاشة اللعب ============ -->
-<section id="game" class="hidden">
-  <div class="wrap">
-    <div class="scoreboard">
-      <div class="sb-team right">
-        <img class="sb-avatar" id="sbAv1" alt="">
-        <div class="sb-info"><div class="sb-name" id="sbName1"></div><div class="sb-score" id="sbScore1">0</div></div>
-      </div>
-      <div class="sb-mid">
-        <div class="qn" id="qNum"></div>
-        <div class="pts">⭐ <span id="curPts">500</span></div>
-      </div>
-      <div class="sb-team left">
-        <img class="sb-avatar" id="sbAv2" alt="">
-        <div class="sb-info" style="text-align:left"><div class="sb-name" id="sbName2"></div><div class="sb-score" id="sbScore2">0</div></div>
-      </div>
-    </div>
+<div class="games-grid">
 
-    <div class="timer-wrap">
-      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
-      <div class="timer-num" id="timerNum">0:00</div>
-      <button class="btn btn-ghost tbtn" id="pauseBtn">⏸ إيقاف</button>
-      <button class="btn btn-ghost tbtn" id="resetTimerBtn">↺ إعادة</button>
-    </div>
-    <div class="hint-line" id="hintLine"></div>
-
-    <div class="grid" id="grid"></div>
-
-    <div class="controls">
-      <button class="btn btn-primary" id="openBtn">🔓 فتح الصورة التالية</button>
-      <button class="btn btn-gold" id="revealBtn">👁 عرض الإجابة</button>
-      <button class="btn btn-ghost" id="skipBtn">⏭ تخطي</button>
-    </div>
-
-    <div class="answer-panel hidden" id="answerPanel">
-      <div class="sub">الإجابة الصحيحة</div>
-      <div class="ans" id="ansText"></div>
-      <div class="sub" id="awardSub">من أجاب أولًا؟ ستُضاف له <b id="awardPts"></b> نقطة</div>
-      <div class="award" id="awardBtns">
-        <button class="btn btn-primary" id="award1"></button>
-        <button class="btn btn-primary" id="award2"></button>
-        <button class="btn btn-danger" id="award0">لا أحد</button>
-      </div>
-      <div class="award-done hidden" id="awardDone"></div>
-    </div>
-
-    <div class="controls">
-      <button class="btn btn-primary hidden" id="nextBtn">السؤال التالي ➜</button>
+  <!-- لعبة ربط الصور -->
+  <div class="game-card">
+    <div class="game-icon">🔗</div>
+    <h2>ربط الصور</h2>
+    <p class="desc">
+      أربع صور لكل سؤال… اكتشف الرابط المشترك بينها قبل خصمك.
+      كل صورة تفتحها تقلل من نقاطك.
+    </p>
+    <div class="actions">
+      <a href="link-game.html" class="btn btn-play">▶ ابدأ اللعب</a>
+      <a href="link-dashboard.html" class="btn btn-dash">⚙️ لوحة التحكم</a>
     </div>
   </div>
-</section>
 
-<!-- ============ شاشة النهاية ============ -->
-<section id="end" class="hidden">
-  <div class="end-card">
-    <h2 id="endTitle">🏆</h2>
-    <img class="winner-avatar" id="winAv" alt="">
-    <div id="winName" style="font-size:26px;font-weight:800"></div>
-    <div class="final">
-      <div><span id="fName1"></span><b id="fScore1">0</b></div>
-      <div><span id="fName2"></span><b id="fScore2">0</b></div>
+  <!-- لعبة تحدي الصورة -->
+  <div class="game-card single">
+    <div class="game-icon">🖼️</div>
+    <h2>تحدي الصورة</h2>
+    <p class="desc">
+      صورة واضحة… خمّن ما تدل عليه قبل أن ينتهي الوقت.
+      استعن بالتلميح إن احترت.
+    </p>
+    <div class="actions">
+      <a href="single-game.html" class="btn btn-play">▶ ابدأ اللعب</a>
+      <a href="single-dashboard.html" class="btn btn-dash">⚙️ لوحة التحكم</a>
     </div>
-    <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
   </div>
-</section>
 
-<script>
-/* =====================================================
-   الإعدادات الافتراضية (تُستبدل من questions.json)
-   ===================================================== */
-let CONFIG = {
-  BAR_CYCLE_SECONDS: 30,
-  POINTS: [500, 500, 400, 300, 200],
-  QUESTIONS_COUNT: 15,
-  SHUFFLE_QUESTIONS: false,
-  DEFAULT_TEAM_NAMES: ["الفريق الأول", "الفريق الثاني"],
-  IMG_PARAMS: "?auto=format&fit=crop&w=700&q=70"
-};
+</div>
 
-let AVATARS = [];
-let QUESTIONS = [];
+<div class="footer">
+  صُنع بشغف 🎯 — نسخة ٢.٠
+</div>
 
-/* =====================================================
-   تحميل البيانات من questions.json
-   ===================================================== */
-async function loadGameData(){
-  try{
-    const r = await fetch("questions.json?v=" + Date.now());
-    if(!r.ok) throw new Error("HTTP " + r.status);
-    const j = await r.json();
-    if(j.config) CONFIG = Object.assign({}, CONFIG, j.config);
-    AVATARS = j.avatars || [];
-    QUESTIONS = j.questions || [];
-  }catch(e){
-    console.warn("تعذّر تحميل questions.json، سيتم استخدام البيانات الافتراضية:", e);
-    QUESTIONS = [
-      { answer:"مثال", emoji:"❓", images:["","","",""] }
-    ];
-  }
-}
-
-/* =====================================================
-   أدوات مساعدة
-   ===================================================== */
-const $ = id => document.getElementById(id);
-const svgURI = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
-function imgURL(v){ return /^(https?:|data:)/.test(v) ? v : "https://images.unsplash.com/" + v + CONFIG.IMG_PARAMS; }
-function fallbackImg(emoji, n){
-  const hues = [120, 30, 45, 0], h = hues[n % 4];
-  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},40%,55%)"/><stop offset="1" stop-color="#efe7d8"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="60" r="90" fill="hsl(${h},45%,60%)" opacity=".15"/><text x="200" y="175" font-size="110" text-anchor="middle">${emoji||"?"}</text></svg>`);
-}
-function defaultAvatar(color){
-  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#efe7d8"/><circle cx="50" cy="38" r="20" fill="${color}"/><path d="M12 100c0-26 17-40 38-40s38 14 38 40z" fill="${color}"/></svg>`);
-}
-const DEF_AV = [defaultAvatar("#6d8b74"), defaultAvatar("#a98467")];
-
-/* =====================================================
-   الحالة
-   ===================================================== */
-let teams = [
-  { name:"", avatar:DEF_AV[0], score:0 },
-  { name:"", avatar:DEF_AV[1], score:0 }
-];
-let quiz = [], qi = 0, opened = 0, timerId = null, qState = "idle";
-let elapsedMs = 0, running = false, lastTick = 0;
-
-/* =====================================================
-   التهيئة
-   ===================================================== */
-function initUI(){
-  $("av1").src = DEF_AV[0];
-  $("av2").src = DEF_AV[1];
-
-  $("loadingMsg").classList.add("hidden");
-  $("teamsSetup").classList.remove("hidden");
-
-  // تحديث قواعد اللعبة حسب الإعدادات
-  $("rulesBox").innerHTML =
-    `${CONFIG.QUESTIONS_COUNT} سؤالًا • 4 صور مغطاة • مؤقت بلا حد (إيقاف / استئناف / إعادة)<br>` +
-    `النقاط حسب عدد الصور المفتوحة: ${CONFIG.POINTS.join(" → ")}`;
-
-  // لو ما فيه صور رمزية، نخفي نافذة الاختيار
-  if(!AVATARS.length){
-    $("pick1").onclick = null;
-    $("pick2").onclick = null;
-  }
-}
-
-function openPicker(idx){
-  if(!AVATARS.length){
-    alert("لا توجد صور رمزية. أضفها من الداشبورد.");
-    return;
-  }
-  const grid = $("pickerGrid");
-  grid.innerHTML = "";
-  AVATARS.forEach(src => {
-    const img = document.createElement("img");
-    img.src = src; img.alt = "صورة";
-    img.onerror = () => { img.style.opacity = ".25"; };
-    img.onclick = () => {
-      teams[idx].avatar = src;
-      $(idx === 0 ? "av1" : "av2").src = src;
-      closePicker();
-    };
-    grid.appendChild(img);
-  });
-  $("avatarPicker").classList.remove("hidden");
-}
-function closePicker(){ $("avatarPicker").classList.add("hidden"); }
-
-$("pick1").onclick = () => openPicker(0);
-$("pick2").onclick = () => openPicker(1);
-$("pickerClose").onclick = closePicker;
-$("avatarPicker").onclick = e => { if(e.target.id === "avatarPicker") closePicker(); };
-
-$("startBtn").onclick = () => {
-  if(!QUESTIONS.length){
-    alert("لا توجد أسئلة. أضفها من الداشبورد أولًا.");
-    return;
-  }
-  teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
-  teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
-  teams[0].score = teams[1].score = 0;
-
-  quiz = QUESTIONS.slice(0, CONFIG.QUESTIONS_COUNT);
-  if(CONFIG.SHUFFLE_QUESTIONS) quiz = quiz.map(q=>[Math.random(),q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
-  qi = 0;
-
-  $("sbAv1").src = teams[0].avatar;  $("sbAv2").src = teams[1].avatar;
-  $("sbName1").textContent = teams[0].name; $("sbName2").textContent = teams[1].name;
-  $("award1").textContent = "✔ " + teams[0].name;
-  $("award2").textContent = "✔ " + teams[1].name;
-  updateScores();
-
-  $("setup").classList.add("hidden");
-  $("end").classList.add("hidden");
-  $("game").classList.remove("hidden");
-  loadQuestion();
-};
-
-/* =====================================================
-   منطق اللعبة
-   ===================================================== */
-function curPoints(){ return CONFIG.POINTS[Math.min(opened, CONFIG.POINTS.length-1)]; }
-
-function updateScores(bumpIdx){
-  $("sbScore1").textContent = teams[0].score;
-  $("sbScore2").textContent = teams[1].score;
-  if(bumpIdx !== undefined){
-    const el = $("sbScore"+(bumpIdx+1));
-    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
-  }
-}
-function updatePtsUI(){
-  $("curPts").textContent = curPoints();
-  $("hintLine").innerHTML = qState === "playing"
-    ? `الصور المفتوحة: <b>${opened}/4</b> — النقاط الحالية: <b>${curPoints()}</b>` : "";
-}
-
-function loadQuestion(){
-  clearInterval(timerId);
-  const q = quiz[qi];
-  opened = 0; qState = "playing";
-  $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
-
-  const grid = $("grid"); grid.innerHTML = "";
-  (q.images || ["","","",""]).forEach((src, i) => {
-    const card = document.createElement("div");
-    card.className = "card"; card.dataset.i = i;
-    const im = document.createElement("img");
-    im.alt = "صورة " + (i+1); im.loading = "eager";
-    im.onerror = () => { im.onerror = null; im.src = fallbackImg(q.emoji, i); };
-    im.src = imgURL(src);
-    const tag = document.createElement("div"); tag.className = "tag"; tag.textContent = "صورة " + (i+1);
-    const cover = document.createElement("div"); cover.className = "cover";
-    const COLS = 8, ROWS = 6;
-    for(let r = 0; r < ROWS; r++){
-      for(let c = 0; c < COLS; c++){
-        const t = document.createElement("div"); t.className = "tile";
-        const dist = Math.hypot(c - (COLS-1)/2, r - (ROWS-1)/2);
-        const hue = [30, 45, 120, 20][(c + r) % 4];
-        t.style.setProperty("--h", hue + Math.round(Math.random()*10));
-        t.style.setProperty("--s", (30 + Math.round(Math.random()*15)) + "%");
-        t.style.setProperty("--l", (55 + Math.round(Math.random()*12)) + "%");
-        t.style.setProperty("--d", Math.round(dist * 70) + "ms");
-        t.style.setProperty("--p", (Math.random()*3).toFixed(2) + "s");
-        cover.appendChild(t);
-      }
-    }
-    const qm = document.createElement("div"); qm.className = "qmark";
-    qm.innerHTML = "<b>?</b><small>اضغط للفتح</small>";
-    card.append(im, cover, qm, tag);
-    card.onclick = () => openImage(i);
-    grid.appendChild(card);
-  });
-
-  $("answerPanel").classList.add("hidden");
-  $("awardBtns").classList.remove("hidden");
-  $("awardSub").classList.remove("hidden");
-  $("awardDone").classList.add("hidden");
-  $("nextBtn").classList.add("hidden");
-  $("openBtn").disabled = false; $("revealBtn").disabled = false; $("skipBtn").disabled = false;
-  $("nextBtn").textContent = (qi === quiz.length-1) ? "🏁 إنهاء المباراة" : "السؤال التالي ➜";
-  updatePtsUI();
-  startTimer();
-}
-
-function startTimer(){
-  clearInterval(timerId);
-  elapsedMs = 0; running = true; lastTick = Date.now();
-  setTimerBtns(true); paintTimer();
-  timerId = setInterval(tick, 100);
-}
-function tick(){
-  if(!running) return;
-  const now = Date.now(); elapsedMs += now - lastTick; lastTick = now; paintTimer();
-}
-function toggleTimer(){
-  if(qState !== "playing") return;
-  if(running){ running = false; } else { running = true; lastTick = Date.now(); }
-  paintTimer();
-}
-function resetTimer(){
-  if(qState !== "playing") return;
-  elapsedMs = 0; running = true; lastTick = Date.now(); paintTimer();
-}
-function setTimerBtns(on){ $("pauseBtn").disabled = !on; $("resetTimerBtn").disabled = !on; }
-function paintTimer(){
-  const secs = Math.floor(elapsedMs / 1000);
-  const m = Math.floor(secs / 60), s = secs % 60;
-  const cycle = CONFIG.BAR_CYCLE_SECONDS * 1000;
-  const ratio = (elapsedMs % cycle) / cycle;
-  const f = $("timerFill"), n = $("timerNum");
-  f.style.width = Math.max(ratio * 100, 1) + "%";
-  f.style.background = ratio < .5 ? "var(--accent)" : ratio < .75 ? "var(--gold)" : "var(--danger)";
-  n.textContent = m + ":" + String(s).padStart(2, "0");
-  n.className = "timer-num" + (ratio >= .75 ? " danger" : ratio >= .5 ? " warn" : "");
-  $("pauseBtn").textContent = running ? "⏸ إيقاف" : "▶ استئناف";
-}
-
-function openImage(i){
-  if(qState !== "playing") return;
-  const cards = $("grid").children;
-  if(cards[i].classList.contains("open")) return;
-  cards[i].classList.add("open");
-  opened++;
-  if(opened >= 4) $("openBtn").disabled = true;
-  updatePtsUI();
-}
-function openNext(){
-  if(qState !== "playing") return;
-  const cards = [...$("grid").children];
-  const next = cards.findIndex(c => !c.classList.contains("open"));
-  if(next >= 0) openImage(next);
-}
-
-function revealAnswer(byTimeout){
-  if(qState !== "playing") return;
-  qState = "revealed";
-  running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
-  [...$("grid").children].forEach(c => c.classList.add("revealed"));
-  const q = quiz[qi], pts = curPoints();
-  $("ansText").textContent = (q.emoji ? q.emoji + " " : "") + q.answer;
-  $("awardPts").textContent = pts;
-  $("awardSub").firstChild.textContent = byTimeout ? "⏰ انتهى الوقت! من أجاب أولًا؟ ستُضاف له " : "من أجاب أولًا؟ ستُضاف له ";
-  $("answerPanel").classList.remove("hidden");
-  $("openBtn").disabled = true; $("revealBtn").disabled = true; $("skipBtn").disabled = true;
-  updatePtsUI();
-  $("answerPanel").scrollIntoView({behavior:"smooth", block:"center"});
-}
-
-function award(idx){
-  if(qState !== "revealed") return;
-  qState = "done";
-  const pts = curPoints();
-  if(idx >= 0){
-    teams[idx].score += pts; updateScores(idx);
-    $("awardDone").textContent = `🎉 ${teams[idx].name} حصل على ${pts} نقطة`;
-  } else {
-    $("awardDone").textContent = "لم تُحتسب نقاط لهذا السؤال";
-  }
-  $("awardBtns").classList.add("hidden");
-  $("awardSub").classList.add("hidden");
-  $("awardDone").classList.remove("hidden");
-  $("nextBtn").classList.remove("hidden");
-}
-
-function nextQuestion(){
-  if(qi >= quiz.length - 1){ return endGame(); }
-  qi++; loadQuestion();
-  window.scrollTo({top:0, behavior:"smooth"});
-}
-function skipQuestion(){
-  if(qState !== "playing") return;
-  clearInterval(timerId); qState = "done"; nextQuestion();
-}
-
-function endGame(){
-  clearInterval(timerId);
-  $("game").classList.add("hidden");
-  $("end").classList.remove("hidden");
-  const [a, b] = teams;
-  $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
-  $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
-  if(a.score === b.score){
-    $("endTitle").textContent = "🤝 تعادل!";
-    $("winAv").classList.add("hidden");
-    $("winName").textContent = "نتيجة متساوية";
-  } else {
-    const w = a.score > b.score ? a : b;
-    $("endTitle").textContent = "🏆 الفائز";
-    $("winAv").classList.remove("hidden");
-    $("winAv").src = w.avatar;
-    $("winName").textContent = w.name;
-  }
-}
-
-/* =====================================================
-   ربط الأزرار
-   ===================================================== */
-$("pauseBtn").onclick      = toggleTimer;
-$("resetTimerBtn").onclick = resetTimer;
-$("openBtn").onclick   = openNext;
-$("revealBtn").onclick = () => revealAnswer(false);
-$("skipBtn").onclick   = skipQuestion;
-$("nextBtn").onclick   = nextQuestion;
-$("award1").onclick    = () => award(0);
-$("award2").onclick    = () => award(1);
-$("award0").onclick    = () => award(-1);
-$("againBtn").onclick  = () => {
-  $("end").classList.add("hidden");
-  $("setup").classList.remove("hidden");
-};
-
-/* =====================================================
-   التشغيل
-   ===================================================== */
-(async function boot(){
-  await loadGameData();
-  initUI();
-})();
-</script>
 </body>
 </html>
