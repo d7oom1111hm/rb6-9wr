@@ -53,6 +53,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .start-row{margin-top:24px;text-align:center}
 .start-row .btn{font-size:20px;padding:14px 46px}
 .rules{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.9;text-align:center}
+.loading-msg{text-align:center;color:var(--muted);padding:8px;font-size:14px}
 
 /* ---------- Avatar Picker Modal ---------- */
 #avatarPicker{position:fixed;inset:0;z-index:100;background:rgba(58,53,47,.55);backdrop-filter:blur(4px);
@@ -166,7 +167,8 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       <h1>🎯 تحدي الصور</h1>
       <p>افتح الصور بحكمة… كلما فتحت صورًا أكثر قلّت النقاط!</p>
     </div>
-    <div class="teams-setup">
+    <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
+    <div class="teams-setup" id="teamsSetup">
       <div class="team-box t1">
         <div class="avatar-pick" id="pick1" title="اضغط لاختيار صورة">
           <img id="av1" alt="">
@@ -183,9 +185,9 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       </div>
     </div>
     <div class="start-row"><button class="btn btn-primary" id="startBtn">▶ ابدأ المباراة</button></div>
-    <div class="rules">
-      15 سؤالًا • 4 صور مغطاة بضبابية • مؤقت يبدأ من الصفر بلا حد (إيقاف / استئناف / إعادة)<br>
-      النقاط: 500 بدون فتح أي صورة • تبقى 500 عند فتح الصورة الأولى • 400 عند فتح صورتين • 300 عند فتح 3 صور • 200 عند فتح 4 صور
+    <div class="rules" id="rulesBox">
+      مؤقت يبدأ من الصفر بلا حد (إيقاف / استئناف / إعادة)<br>
+      النقاط تتناقص كلما فتحت صورًا أكثر
     </div>
   </div>
 </section>
@@ -236,7 +238,7 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
     <div class="answer-panel hidden" id="answerPanel">
       <div class="sub">الإجابة الصحيحة</div>
       <div class="ans" id="ansText"></div>
-      <div class="sub" id="awardSub">من أجاب أولًا؟ ستُضاف له <b id="awardPts"></b> نقطة تلقائيًا</div>
+      <div class="sub" id="awardSub">من أجاب أولًا؟ ستُضاف له <b id="awardPts"></b> نقطة</div>
       <div class="award" id="awardBtns">
         <button class="btn btn-primary" id="award1"></button>
         <button class="btn btn-primary" id="award2"></button>
@@ -267,9 +269,9 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 
 <script>
 /* =====================================================
-   الإعدادات
+   الإعدادات الافتراضية (تُستبدل من questions.json)
    ===================================================== */
-const CONFIG = {
+let CONFIG = {
   BAR_CYCLE_SECONDS: 30,
   POINTS: [500, 500, 400, 300, 200],
   QUESTIONS_COUNT: 15,
@@ -278,37 +280,27 @@ const CONFIG = {
   IMG_PARAMS: "?auto=format&fit=crop&w=700&q=70"
 };
 
-/* =====================================================
-   الصور الرمزية
-   ===================================================== */
-const AVATARS = [
-  "https://i.pinimg.com/736x/36/0f/bb/360fbb22f2ba66aade98e5159f7cd214.jpg",
-  "https://w7.pngwing.com/pngs/896/920/png-transparent-tweety-sylvester-jr-bugs-bunny-cartoon-animation-cartoon-character-comics-mammal.png",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4GFfvhJZsEEY55uDwCnrnVoNx7ewcw7TkRlQkGgoJD571iU-WGBQ70Nc4&s=10",
-  "https://i1.sndcdn.com/artworks-000057723697-un9jf3-t500x500.jpg",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQrusKXcyZuARzQwu4jwM9Un6iwq6-Fb3CjtDLCxoPj0_oLD1F1URV1bsc&s=10",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr_yjzaY3_sP_MiyLRB1qstv4xkGye6pvEPYICPTOSIQ&s=10",
-  "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj2U0gajOEbMTpe_xhm3JkCmFkpuTXXeYIeihZ8hofkXf8oSP438gDCdUEU1sVePerfR5mdsGTdFSfomtDjy48HsLYeEZMqgPoOPXsDD0gHQ8vUpKi5eQw2IWAdPC21gw55ewUEsVpTG0Q/w1200-h630-p-k-no-nu/%25D8%25AA%25D8%25B9%25D9%2584%25D9%2585-%25D8%25B1%25D8%25B3%25D9%2585-%25D9%2581%25D8%25B1%25D8%25B3-%25D8%25A7%25D9%2584%25D9%2586%25D9%2587%25D8%25B1.png",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTB4Bdigwz2_odOsLXvgP-Z2L4_ac4p9h6eUCkKtAL9GeRyUJR42XK3pXd&s=10",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWvKNz4rNjSYhKAuJRk3tqc2fH0Hesq0Ti1Kg-KCgueBZ-WLRHA7Eux5PM&s=10",
-];
+let AVATARS = [];
+let QUESTIONS = [];
 
 /* =====================================================
-   الأسئلة
+   تحميل البيانات من questions.json
    ===================================================== */
-const QUESTIONS = [
-  { answer:"ميمز",   emoji:"", images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQj8czqmr-qVwBPUqrXgHyuYEM0U2nSkPoNKpTb1bwW3fQKVgvrJBEFIPiA&s=10","https://static.wikia.nocookie.net/thetomjerry/images/f/f7/Tom-and-jerry-tom.gif/revision/latest?cb=20110630121202","https://i.etsystatic.com/47531348/r/il/7c92eb/5929871350/il_fullxfull.5929871350_c1g7.jpg","https://upload.wikimedia.org/wikipedia/ar/d/d8/Patrick_Star.jpg?utm_source=ar.wikipedia.org&utm_campaign=index&utm_content=original"] },
-  { answer:"فالكون", emoji:"", images:["https://static.dw.com/image/37881656_804.jpg","https://i.pinimg.com/564x/61/78/b7/6178b7477a242757216a3d6f05a20fc1.jpg","https://cdn.salla.sa/VqpOlZ/67af1ad2-e168-487f-8d97-854e39e8284f-1000x1000-KXBJqqeovPOuD9DUSeF9phAGftpYwJu9G6dlBmT6.jpg","https://ecombe.nahdionline.com/media/catalog/product/1/0/103336771_ae144cbcf196287ff_27675.jpg"] },
-  { answer:"والتر وايت", emoji:"", images:["https://cdn.salla.sa/VqpOlZ/67af1ad2-e168-487f-8d97-854e39e8284f-1000x1000-KXBJqqeovPOuD9DUSeF9phAGftpYwJu9G6dlBmT6.jpg","https://m.media-amazon.com/images/I/61owAvm1G0L._AC_SX385_.jpg","https://www.almuraba.net/wp-content/uploads/2022/12/%D8%A8%D9%88%D9%86%D8%AA%D9%8A%D8%A7%D9%83-%D8%A7%D8%B2%D8%AA%D9%8A%D9%83-3.jpg","https://www.independentarabia.com/sites/default/files/article/mainimage/2022/05/19/544541-97720770.jpg"] },
-  { answer:"سيارات",   emoji:"", images:["https://atharsale.com/uploads/images/202505/img_lg_682eea9b84d1a6-72682692.jpg","https://img.magnific.com/free-psd/adorable-3d-rendered-ghost-halloween_191095-84456.jpg?semt=ais_hybrid&w=740&q=80","https://cdn.salla.sa/onqKZz/9862c2dc-e9b0-43fa-86ae-31d9f94ceb05-1000x753-qwgufFeIkONU0RME8yeEB0YpvZX3b7HAMBTrnSK2.jpg","https://png.pngtree.com/thumb_back/fh260/background/20210903/pngtree-live-shots-of-rabbits-in-the-wild-during-the-day-image_800715.jpg"] },
-  { answer:"صنع بالسعوديه",   emoji:"", images:["https://cdn.salla.sa/OmYAm/a96b40b7-1d93-4b53-876e-fe25df3fc4c6-746.04179860671x1000-15FOMaZxkQu5OwCyDQqvX8blT3dOvHNWm1Eusvht.png","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnOPvoCUmzSferm2NeMUah9LWpG5afJnGZVsvPSn1y-rOClmfe6jcWHUw&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDvOya1Bxifln1PbX8x5VLFSCodVCVgWFF4f9ANncJpwI7XTsl7pM4JoX1&s=10","https://cdn.salla.sa/GYNEpb/c3dc9195-2f14-4aca-ad12-60894da5c009-1000x1000-EoHUGmohrHmLWzIaqEUmn3HB0RRf0u6f0DHcxmPT.png"] },
-  { answer:"سور ",   emoji:"", images:["https://shera.sa/storage/products/QBj3rP62AvmviAty8b9nz4Gv1JGYPVBibZFJvOJm.jpg","https://cdn.salla.sa/aK2q0bSmIJL9CoMVpBtLoeHSzKfCwK2ZOL8BqjGG.jpg","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFy9qRhezB8tlPBTIDQHL_sSHHxFnkc5jZmJK1y1z5HA&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRe6uI0_8iLctMdVAhKyQ43BAOcum3MTOt-iJn7Lbd5HM8nZUEHE1xaYXE&s=10"] },
-  { answer:"يستخرج منها طيب",   emoji:"", images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHGN0KsA4rr0zUFNq2Q-FwoSAPYyn8DtCrSaX3OlhY2w&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQVKredHQj8IwX6ELdLZXVPkmaxdsc3QtYu5GG_uwYmFlShJ5ANAwfzsnI&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVpzVI5HKFAMYQLFRlOsqKOegdIYm1s13wQArv2NC4TAQ3BYt8jScUK_k&s=10","https://cdn.alweb.com/thumbs/woroodoazhar/article/fit710x532/%D9%83%D9%8A%D9%81-%D9%8A%D8%B2%D9%87%D8%B1-%D8%A7%D9%84%D9%8A%D8%A7%D8%B3%D9%85%D9%8A%D9%86-%D8%A7%D9%84%D9%87%D9%86%D8%AF%D9%8A.jpg"] },
-  { answer:"احياء بريدة",  emoji:"", images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ4zMdA6e2IyMrDvjmF0hkXjBEskjyPszFWOOLxwkDoP20FDwMx4ujOsVi&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPkVW5dXQB43SaTfhoDVvMrGFZIUC2oFSgvHIx_LMHVBJjNWxWlBOdPQI&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThcfSzAwTC0gq44LXj11xSO5LBh1_xm-pZQk5esq-Upw&s","https://ar.encycolorpedia.com/ffff00.png"] },
-  { answer:"حجب",  emoji:"", images:["https://vid.alarabiya.net/images/2020/06/03/6adb7138-bdce-4989-aa06-d098f76fc1bc/6adb7138-bdce-4989-aa06-d098f76fc1bc_16x9_1200x676.jpg?width=720","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQisnyA3cHv0bO6H0rbF1bVGpiTE4P10eAUcT44iN-KosFLWqkhXCo78aYW&s=10","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSipJoCkWYIKaBPO8gd7ddb0Fw8nROKPZca4R6MSVMV0w&s","https://m.media-amazon.com/images/I/61hbh5Z+-3L._AC_SX385_.jpg"] },
-  { answer:"بحور الشعر",  emoji:"", images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBDnW17l4OgfvtJB0gmxlZbia-cboZf9-HdON16QAri_-HTvd3HsACiphT&s=10","https://www.mumzworld.com/media/catalog/product/f/g/fgi-eu690903--1589320612.jpg","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwUApMxTSTXHbAn4OIdSDU7CsXG4esz83tdhkGFlO_WMDsUMN__NkIpJA&s=10","https://errakb.info/wp-content/uploads/2017/06/%D8%A3%D8%B7%D9%88%D9%84-%D8%B1%D8%AC%D9%84.jpg"] },
-  { answer:"فاير فوكس",   emoji:"", images:["https://png.pngtree.com/png-vector/20240827/ourmid/pngtree-realistic-3d-fire-flame-effect-for-designs-png-image_13631567.png","https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Meteosat-12-fci-march-equinox-2025-noon.jpg/1280px-Meteosat-12-fci-march-equinox-2025-noon.jpg?utm_source=ar.wikipedia.org&utm_campaign=index&utm_content=thumbnail","https://upload.wikimedia.org/wikipedia/commons/d/d2/Portrait_of_a_red_fox_in_Rautas_fj%C3%A4llurskog_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=index&utm_content=original","https://macrosoft.store/img/ets_blog/post/6cf24b3977-image1.png"] },
-];
+async function loadGameData(){
+  try{
+    const r = await fetch("questions.json?v=" + Date.now());
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if(j.config) CONFIG = Object.assign({}, CONFIG, j.config);
+    AVATARS = j.avatars || [];
+    QUESTIONS = j.questions || [];
+  }catch(e){
+    console.warn("تعذّر تحميل questions.json، سيتم استخدام البيانات الافتراضية:", e);
+    QUESTIONS = [
+      { answer:"مثال", emoji:"❓", images:["","","",""] }
+    ];
+  }
+}
 
 /* =====================================================
    أدوات مساعدة
@@ -318,7 +310,7 @@ const svgURI = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s
 function imgURL(v){ return /^(https?:|data:)/.test(v) ? v : "https://images.unsplash.com/" + v + CONFIG.IMG_PARAMS; }
 function fallbackImg(emoji, n){
   const hues = [120, 30, 45, 0], h = hues[n % 4];
-  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},40%,55%)"/><stop offset="1" stop-color="#efe7d8"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="60" r="90" fill="hsl(${h},45%,60%)" opacity=".15"/><text x="200" y="175" font-size="110" text-anchor="middle">${emoji}</text></svg>`);
+  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h},40%,55%)"/><stop offset="1" stop-color="#efe7d8"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="60" r="90" fill="hsl(${h},45%,60%)" opacity=".15"/><text x="200" y="175" font-size="110" text-anchor="middle">${emoji||"?"}</text></svg>`);
 }
 function defaultAvatar(color){
   return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#efe7d8"/><circle cx="50" cy="38" r="20" fill="${color}"/><path d="M12 100c0-26 17-40 38-40s38 14 38 40z" fill="${color}"/></svg>`);
@@ -336,12 +328,32 @@ let quiz = [], qi = 0, opened = 0, timerId = null, qState = "idle";
 let elapsedMs = 0, running = false, lastTick = 0;
 
 /* =====================================================
-   شاشة الإعداد
+   التهيئة
    ===================================================== */
-$("av1").src = DEF_AV[0];
-$("av2").src = DEF_AV[1];
+function initUI(){
+  $("av1").src = DEF_AV[0];
+  $("av2").src = DEF_AV[1];
+
+  $("loadingMsg").classList.add("hidden");
+  $("teamsSetup").classList.remove("hidden");
+
+  // تحديث قواعد اللعبة حسب الإعدادات
+  $("rulesBox").innerHTML =
+    `${CONFIG.QUESTIONS_COUNT} سؤالًا • 4 صور مغطاة • مؤقت بلا حد (إيقاف / استئناف / إعادة)<br>` +
+    `النقاط حسب عدد الصور المفتوحة: ${CONFIG.POINTS.join(" → ")}`;
+
+  // لو ما فيه صور رمزية، نخفي نافذة الاختيار
+  if(!AVATARS.length){
+    $("pick1").onclick = null;
+    $("pick2").onclick = null;
+  }
+}
 
 function openPicker(idx){
+  if(!AVATARS.length){
+    alert("لا توجد صور رمزية. أضفها من الداشبورد.");
+    return;
+  }
   const grid = $("pickerGrid");
   grid.innerHTML = "";
   AVATARS.forEach(src => {
@@ -365,6 +377,10 @@ $("pickerClose").onclick = closePicker;
 $("avatarPicker").onclick = e => { if(e.target.id === "avatarPicker") closePicker(); };
 
 $("startBtn").onclick = () => {
+  if(!QUESTIONS.length){
+    alert("لا توجد أسئلة. أضفها من الداشبورد أولًا.");
+    return;
+  }
   teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
   teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
   teams[0].score = teams[1].score = 0;
@@ -411,7 +427,7 @@ function loadQuestion(){
   $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
 
   const grid = $("grid"); grid.innerHTML = "";
-  q.images.forEach((src, i) => {
+  (q.images || ["","","",""]).forEach((src, i) => {
     const card = document.createElement("div");
     card.className = "card"; card.dataset.i = i;
     const im = document.createElement("img");
@@ -425,7 +441,6 @@ function loadQuestion(){
       for(let c = 0; c < COLS; c++){
         const t = document.createElement("div"); t.className = "tile";
         const dist = Math.hypot(c - (COLS-1)/2, r - (ROWS-1)/2);
-        // درجات ترابية/زيتونية هادئة
         const hue = [30, 45, 120, 20][(c + r) % 4];
         t.style.setProperty("--h", hue + Math.round(Math.random()*10));
         t.style.setProperty("--s", (30 + Math.round(Math.random()*15)) + "%");
@@ -508,7 +523,7 @@ function revealAnswer(byTimeout){
   running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
   [...$("grid").children].forEach(c => c.classList.add("revealed"));
   const q = quiz[qi], pts = curPoints();
-  $("ansText").textContent = q.emoji + " " + q.answer;
+  $("ansText").textContent = (q.emoji ? q.emoji + " " : "") + q.answer;
   $("awardPts").textContent = pts;
   $("awardSub").firstChild.textContent = byTimeout ? "⏰ انتهى الوقت! من أجاب أولًا؟ ستُضاف له " : "من أجاب أولًا؟ ستُضاف له ";
   $("answerPanel").classList.remove("hidden");
@@ -563,7 +578,9 @@ function endGame(){
   }
 }
 
-/* ---------- الأزرار ---------- */
+/* =====================================================
+   ربط الأزرار
+   ===================================================== */
 $("pauseBtn").onclick      = toggleTimer;
 $("resetTimerBtn").onclick = resetTimer;
 $("openBtn").onclick   = openNext;
@@ -577,6 +594,14 @@ $("againBtn").onclick  = () => {
   $("end").classList.add("hidden");
   $("setup").classList.remove("hidden");
 };
+
+/* =====================================================
+   التشغيل
+   ===================================================== */
+(async function boot(){
+  await loadGameData();
+  initUI();
+})();
 </script>
 </body>
 </html>
