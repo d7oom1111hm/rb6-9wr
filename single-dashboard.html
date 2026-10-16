@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>داشبورد تحدي الصورة</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+<style>
+:root{
+  --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
+  --accent:#6d8b74; --accent2:#a98467; --gold:#c9a227;
+  --text:#3a352f; --muted:#8a8072; --danger:#b85c5c; --ok:#6d8b74;
+  --line:rgba(58,53,47,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+input,textarea,select{font-family:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+h1{font-size:26px;margin-bottom:6px;color:var(--accent)}
+.sub{color:var(--muted);margin-bottom:20px;font-size:14px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 4px 16px rgba(58,53,47,.05)}
+.card h2{font-size:18px;margin-bottom:14px;color:var(--accent2)}
+
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:5px;margin-top:10px}
+input[type=text],input[type=password],input[type=number],textarea,select{
+  width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--line);
+  background:#fff;color:var(--text);font-size:14px;
+}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent)}
+textarea{resize:vertical;min-height:70px}
+
+.btn{padding:10px 18px;border-radius:9px;font-size:14px;font-weight:700;transition:.15s}
+.btn:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-purple{background:var(--accent2);color:#fff}
+.btn-gold{background:var(--gold);color:#3a352f}
+.btn-ghost{background:var(--panel2);border:1px solid var(--line)}
+.btn-danger{background:rgba(184,92,92,.12);border:1px solid var(--danger);color:var(--danger)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+
+.q-card{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.q-num{background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.q-actions{display:flex;gap:6px}
+.icon-btn{padding:6px 10px;border-radius:7px;font-size:12px;background:var(--panel);border:1px solid var(--line)}
+.icon-btn.del{background:rgba(184,92,92,.12);border-color:var(--danger);color:var(--danger)}
+
+.img-input{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.img-input img{width:70px;height:70px;object-fit:cover;border-radius:7px;border:1px solid var(--line);flex:none;background:#fff}
+.img-input input{flex:1}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120%);
+  background:var(--ok);color:#fff;padding:12px 24px;border-radius:10px;font-weight:700;
+  transition:transform .3s;z-index:100;box-shadow:0 6px 20px rgba(58,53,47,.3)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--danger)}
+.status{font-size:13px;color:var(--muted);margin-right:auto}
+.status.ok{color:var(--ok)} .status.err{color:var(--danger)}
+.hidden{display:none!important}
+.hint-txt{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.7}
+a{color:var(--accent)}
+
+.top-nav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.top-nav .links{display:flex;gap:8px;flex-wrap:wrap}
+.top-nav a{
+  padding:8px 14px;border-radius:9px;font-size:13px;text-decoration:none;
+  background:var(--panel);border:1px solid var(--line);color:var(--text);
+}
+.top-nav a.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-nav">
+    <div>
+      <h1>⚙️ داشبورد تحدي الصورة</h1>
+      <p class="sub">إدارة لعبة تحدي الصورة الواحدة</p>
+    </div>
+    <div class="links">
+      <a href="index.html">🏠 الرئيسية</a>
+      <a href="link-dashboard.html">🔗 داشبورد ربط الصور</a>
+      <a href="single-dashboard.html" class="active">🖼️ داشبورد تحدي الصورة</a>
+    </div>
+  </div>
+
+  <!-- ============ إعدادات GitHub ============ -->
+  <div class="card">
+    <h2>🔗 إعدادات الاتصال بـ GitHub</h2>
+    <div class="grid2">
+      <div>
+        <label>GitHub Username</label>
+        <input type="text" id="cfgUser" placeholder="مثال: ahmed123">
+      </div>
+      <div>
+        <label>اسم المستودع (Repository)</label>
+        <input type="text" id="cfgRepo" placeholder="مثال: rb6-9wr">
+      </div>
+      <div>
+        <label>الفرع (Branch)</label>
+        <input type="text" id="cfgBranch" value="main">
+      </div>
+      <div>
+        <label>مسار ملف الأسئلة</label>
+        <input type="text" id="cfgPath" value="questions-single.json">
+      </div>
+    </div>
+    <label>GitHub Token (Fine-grained — Contents: Read and write)</label>
+    <input type="password" id="cfgToken" placeholder="github_pat_xxxxxxxxxxxx">
+    <p class="hint-txt">
+      ⚠️ التوكن يُحفظ في متصفحك فقط. لا تشاركه مع أحد.
+    </p>
+    <div class="row">
+      <button class="btn btn-primary" id="saveCfg">💾 حفظ الإعدادات</button>
+      <button class="btn btn-ghost" id="clearCfg">🗑 مسح الإعدادات</button>
+    </div>
+  </div>
+
+  <!-- ============ إعدادات اللعبة ============ -->
+  <div class="card">
+    <h2>🎮 إعدادات اللعبة</h2>
+    <div class="grid2">
+      <div>
+        <label>مدة دورة شريط الوقت (ثانية)</label>
+        <input type="number" id="cfBarCycle" value="30" min="5">
+      </div>
+      <div>
+        <label>عدد الأسئلة في المباراة</label>
+        <input type="number" id="cfQCount" value="15" min="1">
+      </div>
+      <div>
+        <label>نقاط كل سؤال</label>
+        <input type="number" id="cfPoints" value="1" min="1">
+      </div>
+      <div>
+        <label>ترتيب عشوائي للأسئلة؟</label>
+        <select id="cfShuffle">
+          <option value="false">لا</option>
+          <option value="true">نعم</option>
+        </select>
+      </div>
+      <div>
+        <label>اسم الفريق الأول الافتراضي</label>
+        <input type="text" id="cfTeam1" value="الفريق الأول">
+      </div>
+      <div>
+        <label>اسم الفريق الثاني الافتراضي</label>
+        <input type="text" id="cfTeam2" value="الفريق الثاني">
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ الصور الرمزية ============ -->
+  <div class="card">
+    <h2>🖼️ الصور الرمزية الجاهزة</h2>
+    <div id="avatarsList"></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="addAvatar">➕ إضافة صورة رمزية</button>
+    </div>
+  </div>
+
+  <!-- ============ الأسئلة ============ -->
+  <div class="card">
+    <h2>❓ الأسئلة</h2>
+    <div id="questionsList"></div>
+    <div class="row">
+      <button class="btn btn-ghost" id="addQuestion">➕ إضافة سؤال</button>
+    </div>
+  </div>
+
+  <!-- ============ الأزرار الرئيسية ============ -->
+  <div class="card">
+    <h2>💾 الحفظ والتحميل</h2>
+    <div class="row">
+      <button class="btn btn-gold" id="loadBtn">⬇️ تحميل من GitHub</button>
+      <button class="btn btn-primary" id="saveBtn">⬆️ حفظ على GitHub</button>
+      <button class="btn btn-purple" id="exportBtn">📤 تصدير JSON</button>
+      <button class="btn btn-ghost" id="importBtn">📥 استيراد JSON</button>
+      <input type="file" id="importFile" accept=".json" class="hidden">
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ عناصر ============ */
+const $ = id => document.getElementById(id);
+const CFG_KEY = "quiz_single_dashboard_cfg";
+
+let data = {
+  config: {
+    BAR_CYCLE_SECONDS: 30,
+    QUESTIONS_COUNT: 15,
+    SHUFFLE_QUESTIONS: false,
+    DEFAULT_TEAM_NAMES: ["الفريق الأول", "الفريق الثاني"],
+    POINTS_PER_QUESTION: 1
+  },
+  avatars: [],
+  questions: []
+};
+
+let sha = null;
+
+/* ============ Toast ============ */
+function toast(msg, isErr){
+  const t = $("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (isErr ? " err" : "");
+  setTimeout(() => t.className = "toast" + (isErr ? " err" : ""), 2600);
+}
+function setStatus(msg, cls){
+  const s = $("status");
+  s.textContent = msg;
+  s.className = "status" + (cls ? " " + cls : "");
+}
+
+/* ============ إعدادات GitHub ============ */
+function loadCfg(){
+  try{
+    const c = JSON.parse(localStorage.getItem(CFG_KEY) || "{}");
+    if(c.user) $("cfgUser").value = c.user;
+    if(c.repo) $("cfgRepo").value = c.repo;
+    if(c.branch) $("cfgBranch").value = c.branch;
+    if(c.path) $("cfgPath").value = c.path;
+    if(c.token) $("cfgToken").value = c.token;
+  }catch(e){}
+}
+function getCfg(){
+  return {
+    user: $("cfgUser").value.trim(),
+    repo: $("cfgRepo").value.trim(),
+    branch: $("cfgBranch").value.trim() || "main",
+    path: $("cfgPath").value.trim() || "questions-single.json",
+    token: $("cfgToken").value.trim()
+  };
+}
+$("saveCfg").onclick = () => {
+  localStorage.setItem(CFG_KEY, JSON.stringify(getCfg()));
+  toast("✅ تم حفظ الإعدادات");
+};
+$("clearCfg").onclick = () => {
+  localStorage.removeItem(CFG_KEY);
+  ["cfgUser","cfgRepo","cfgToken"].forEach(id => $(id).value = "");
+  $("cfgBranch").value = "main";
+  $("cfgPath").value = "questions-single.json";
+  toast("🗑 تم مسح الإعدادات");
+};
+
+/* ============ GitHub API ============ */
+function apiURL(cfg){
+  return `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${cfg.path}`;
+}
+function headers(cfg){
+  return {
+    "Authorization": `Bearer ${cfg.token}`,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+}
+function b64encode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64decode(str){ return decodeURIComponent(escape(atob(str.replace(/\n/g,"")))); }
+
+async function loadFromGitHub(){
+  const cfg = getCfg();
+  if(!cfg.user || !cfg.repo || !cfg.token){ toast("⚠️ عبّي بيانات GitHub أولاً", true); return; }
+  setStatus("⏳ جاري التحميل...");
+  try{
+    const r = await fetch(apiURL(cfg), { headers: headers(cfg) });
+    if(r.status === 404){
+      setStatus("⚠️ الملف غير موجود — سيُنشأ عند الحفظ الأول");
+      toast("الملف غير موجود — عدّل ثم احفظ لإنشائه", true);
+      sha = null;
+      renderAll();
+      return;
+    }
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    sha = j.sha;
+    data = JSON.parse(b64decode(j.content));
+    fillConfigUI();
+    renderAll();
+    setStatus("✅ تم التحميل", "ok");
+    toast("✅ تم تحميل الأسئلة");
+  }catch(e){
+    console.error(e);
+    setStatus("❌ فشل: " + e.message, "err");
+    toast("❌ فشل التحميل: " + e.message, true);
+  }
+}
+
+async function saveToGitHub(){
+  const cfg = getCfg();
+  if(!cfg.user || !cfg.repo || !cfg.token){ toast("⚠️ عبّي بيانات GitHub أولاً", true); return; }
+  collectConfigUI();
+  setStatus("⏳ جاري الحفظ...");
+  try{
+    if(!sha){
+      try{
+        const r = await fetch(apiURL(cfg), { headers: headers(cfg) });
+        if(r.ok){ const j = await r.json(); sha = j.sha; }
+      }catch(e){}
+    }
+    const body = {
+      message: "تحديث أسئلة تحدي الصورة " + new Date().toISOString(),
+      content: b64encode(JSON.stringify(data, null, 2)),
+      branch: cfg.branch
+    };
+    if(sha) body.sha = sha;
+    const r = await fetch(apiURL(cfg), {
+      method: "PUT",
+      headers: { ...headers(cfg), "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if(!r.ok){
+      const err = await r.json().catch(()=>({}));
+      throw new Error(err.message || ("HTTP " + r.status));
+    }
+    const j = await r.json();
+    sha = j.content.sha;
+    setStatus("✅ تم الحفظ", "ok");
+    toast("✅ تم الحفظ على GitHub");
+  }catch(e){
+    console.error(e);
+    setStatus("❌ فشل: " + e.message, "err");
+    toast("❌ فشل الحفظ: " + e.message, true);
+  }
+}
+
+/* ============ واجهة الإعدادات ============ */
+function fillConfigUI(){
+  const c = data.config || {};
+  $("cfBarCycle").value = c.BAR_CYCLE_SECONDS ?? 30;
+  $("cfQCount").value = c.QUESTIONS_COUNT ?? 15;
+  $("cfPoints").value = c.POINTS_PER_QUESTION ?? 1;
+  $("cfShuffle").value = String(c.SHUFFLE_QUESTIONS ?? false);
+  $("cfTeam1").value = (c.DEFAULT_TEAM_NAMES && c.DEFAULT_TEAM_NAMES[0]) || "الفريق الأول";
+  $("cfTeam2").value = (c.DEFAULT_TEAM_NAMES && c.DEFAULT_TEAM_NAMES[1]) || "الفريق الثاني";
+}
+function collectConfigUI(){
+  data.config = {
+    BAR_CYCLE_SECONDS: parseInt($("cfBarCycle").value) || 30,
+    QUESTIONS_COUNT: parseInt($("cfQCount").value) || 15,
+    POINTS_PER_QUESTION: parseInt($("cfPoints").value) || 1,
+    SHUFFLE_QUESTIONS: $("cfShuffle").value === "true",
+    DEFAULT_TEAM_NAMES: [$("cfTeam1").value.trim() || "الفريق الأول", $("cfTeam2").value.trim() || "الفريق الثاني"]
+  };
+}
+
+/* ============ الصور الرمزية ============ */
+function renderAvatars(){
+  const box = $("avatarsList");
+  box.innerHTML = "";
+  (data.avatars || []).forEach((src, i) => {
+    const row = document.createElement("div");
+    row.className = "img-input";
+    row.innerHTML = `
+      <img src="${src}" onerror="this.style.opacity='.25'">
+      <input type="text" value="${src.replace(/"/g,'&quot;')}" placeholder="رابط الصورة الرمزية">
+      <button class="icon-btn del" data-del="${i}">🗑</button>
+    `;
+    row.querySelector("input").oninput = e => { data.avatars[i] = e.target.value; };
+    row.querySelector("input").onchange = e => { row.querySelector("img").src = e.target.value; };
+    row.querySelector("[data-del]").onclick = () => { data.avatars.splice(i,1); renderAvatars(); };
+    box.appendChild(row);
+  });
+}
+$("addAvatar").onclick = () => {
+  data.avatars = data.avatars || [];
+  data.avatars.push("");
+  renderAvatars();
+};
+
+/* ============ الأسئلة ============ */
+function renderQuestions(){
+  const box = $("questionsList");
+  box.innerHTML = "";
+  (data.questions || []).forEach((q, i) => {
+    const card = document.createElement("div");
+    card.className = "q-card";
+    card.innerHTML = `
+      <div class="q-head">
+        <div class="q-num">${i+1}</div>
+        <div class="q-actions">
+          <button class="icon-btn" data-up="${i}">⬆</button>
+          <button class="icon-btn" data-down="${i}">⬇</button>
+          <button class="icon-btn del" data-del="${i}">🗑 حذف</button>
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label>الإجابة</label>
+          <input type="text" data-field="answer" data-i="${i}" value="${(q.answer||'').replace(/"/g,'&quot;')}">
+        </div>
+        <div>
+          <label>التلميح (نص)</label>
+          <input type="text" data-field="hint" data-i="${i}" value="${(q.hint||'').replace(/"/g,'&quot;')}" placeholder="تلميح يساعد الفريق">
+        </div>
+      </div>
+      <label style="margin-top:12px">رابط الصورة</label>
+      <div class="img-input">
+        <img src="${(q.image||'').replace(/"/g,'&quot;')}" onerror="this.style.opacity='.25'">
+        <input type="text" data-field="image" data-i="${i}" value="${(q.image||'').replace(/"/g,'&quot;')}" placeholder="رابط الصورة">
+      </div>
+    `;
+    card.querySelectorAll("[data-field]").forEach(inp => {
+      inp.oninput = e => {
+        q[e.target.dataset.field] = e.target.value;
+        if(e.target.dataset.field === "image"){
+          card.querySelector(".img-input img").src = e.target.value;
+        }
+      };
+    });
+    card.querySelector("[data-del]").onclick = () => { data.questions.splice(i,1); renderQuestions(); };
+    card.querySelector("[data-up]").onclick = () => {
+      if(i>0){ [data.questions[i-1], data.questions[i]] = [data.questions[i], data.questions[i-1]]; renderQuestions(); }
+    };
+    card.querySelector("[data-down]").onclick = () => {
+      if(i < data.questions.length-1){ [data.questions[i+1], data.questions[i]] = [data.questions[i], data.questions[i+1]]; renderQuestions(); }
+    };
+    box.appendChild(card);
+  });
+}
+$("addQuestion").onclick = () => {
+  data.questions = data.questions || [];
+  data.questions.push({ answer:"", hint:"", image:"" });
+  renderQuestions();
+};
+
+function renderAll(){ renderAvatars(); renderQuestions(); }
+
+/* ============ تصدير / استيراد ============ */
+$("exportBtn").onclick = () => {
+  collectConfigUI();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "questions-single.json";
+  a.click();
+  toast("📤 تم التصدير");
+};
+$("importBtn").onclick = () => $("importFile").click();
+$("importFile").onchange = e => {
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      data = JSON.parse(r.result);
+      fillConfigUI(); renderAll();
+      toast("📥 تم الاستيراد — لا تنسَ الحفظ");
+    }catch(err){ toast("❌ ملف غير صالح", true); }
+  };
+  r.readAsText(f);
+};
+
+/* ============ الربط ============ */
+$("loadBtn").onclick = loadFromGitHub;
+$("saveBtn").onclick = saveToGitHub;
+
+/* ============ تشغيل ============ */
+loadCfg();
+renderAll();
+</script>
+</body>
+</html>

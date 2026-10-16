@@ -1,0 +1,25 @@
+{
+  "config": {
+    "BAR_CYCLE_SECONDS": 30,
+    "QUESTIONS_COUNT": 15,
+    "SHUFFLE_QUESTIONS": false,
+    "DEFAULT_TEAM_NAMES": ["الفريق الأول", "الفريق الثاني"],
+    "POINTS_PER_QUESTION": 1
+  },
+  "avatars": [
+    "https://i.pinimg.com/736x/36/0f/bb/360fbb22f2ba66aade98e5159f7cd214.jpg",
+    "https://w7.pngwing.com/pngs/896/920/png-transparent-tweety-sylvester-jr-bugs-bunny-cartoon-animation-cartoon-character-comics-mammal.png"
+  ],
+  "questions": [
+    {
+      "answer": "برج إيفل",
+      "hint": "معلم سياحي في باريس",
+      "image": "https://example.com/eiffel.jpg"
+    },
+    {
+      "answer": "كرة القدم",
+      "hint": "اللعبة الأكثر شعبية في العالم",
+      "image": "https://example.com/football.jpg"
+    }
+  ]
+}
