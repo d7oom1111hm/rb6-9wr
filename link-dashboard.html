@@ -90,7 +90,7 @@ a{color:var(--accent)}
       </div>
       <div>
         <label>مسار ملف الأسئلة</label>
-        <input type="text" id="cfgPath" value="questions.json">
+        <input type="text" id="cfgPath" value="questions-link.json">
       </div>
     </div>
     <label>GitHub Token (Fine-grained، صلاحية Contents: Read and write)</label>
@@ -221,7 +221,7 @@ function getCfg(){
     user: $("cfgUser").value.trim(),
     repo: $("cfgRepo").value.trim(),
     branch: $("cfgBranch").value.trim() || "main",
-    path: $("cfgPath").value.trim() || "questions.json",
+    path: $("cfgPath").value.trim() || "questions-link.json",
     token: $("cfgToken").value.trim()
   };
 }
@@ -233,7 +233,7 @@ $("clearCfg").onclick = () => {
   localStorage.removeItem(CFG_KEY);
   ["cfgUser","cfgRepo","cfgToken"].forEach(id => $(id).value = "");
   $("cfgBranch").value = "main";
-  $("cfgPath").value = "questions.json";
+  $("cfgPath").value = "questions-link.json";
   toast("🗑 تم مسح الإعدادات");
 };
 

@@ -324,11 +324,16 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       <div><span id="fName1"></span><b id="fScore1">0</b></div>
       <div><span id="fName2"></span><b id="fScore2">0</b></div>
     </div>
-    <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
+        <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
   </div>
 </section>
 
+<!-- زر كتم الصوت -->
+<button id="soundToggle" title="كتم الصوت" style="position:fixed;bottom:18px;left:18px;z-index:200;width:52px;height:52px;border-radius:50%;font-size:22px;background:#fbf7ef;border:1px solid rgba(58,53,47,.15);box-shadow:0 4px 14px rgba(58,53,47,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s">🔊</button>
+
+<script src="sounds.js"></script>
 <script>
+
 /* =====================================================
    الإعدادات الافتراضية (تُستبدل من questions-single.json)
    ===================================================== */
@@ -541,6 +546,7 @@ function revealAnswer(){
   if(qState !== "playing") return;
   qState = "revealed";
   running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
+  if(window.SFX) window.SFX.play("reveal");
   const q = quiz[qi];
   $("ansText").textContent = q.answer || "—";
   $("answerBox").classList.remove("hidden");
@@ -561,6 +567,7 @@ function award(idx){
   if(idx >= 0){
     teams[idx].score += pts;
     updateScores(idx);
+    if(window.SFX) window.SFX.play("success");
     $("awardDone").textContent = `🎉 ${teams[idx].name} حصل على ${pts} نقطة`;
   } else {
     $("awardDone").textContent = "لم تُحتسب نقاط لهذا السؤال";
@@ -609,6 +616,7 @@ function endGame(){
   clearInterval(timerId);
   $("game").classList.add("hidden");
   $("end").classList.remove("hidden");
+  if(window.SFX) window.SFX.play("win");
   const [a, b] = teams;
   $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
   $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
@@ -625,24 +633,48 @@ function endGame(){
   }
 }
 
-/* ---------- الأزرار ---------- */
-$("pauseBtn").onclick      = toggleTimer;
-$("resetTimerBtn").onclick = resetTimer;
-$("hintBtn").onclick       = showHint;
-$("revealBtn").onclick     = revealAnswer;
-$("skipBtn").onclick       = skipQuestion;
-$("nextBtn").onclick       = nextQuestion;
-$("award1").onclick        = () => award(0);
-$("award2").onclick        = () => award(1);
-$("award0").onclick        = () => award(-1);
+/* ============ الأزرار مع الأصوات ============ */
+const sfx = (n) => { if(window.SFX) window.SFX.play(n); };
+
+$("pauseBtn").onclick      = () => { sfx("click"); toggleTimer(); };
+$("resetTimerBtn").onclick = () => { sfx("click"); resetTimer(); };
+$("hintBtn").onclick       = () => { sfx("click"); showHint(); };
+$("revealBtn").onclick     = () => { sfx("click"); revealAnswer(); };
+$("skipBtn").onclick       = () => { sfx("click"); skipQuestion(); };
+$("nextBtn").onclick       = () => { sfx("click"); nextQuestion(); };
+$("award1").onclick        = () => { sfx("click"); award(0); };
+$("award2").onclick        = () => { sfx("click"); award(1); };
+$("award0").onclick        = () => { sfx("click"); award(-1); };
 $("againBtn").onclick      = () => {
+  sfx("click");
   $("end").classList.add("hidden");
   $("setup").classList.remove("hidden");
 };
-
+$("startBtn").onclick = (() => {
+  const orig = $("startBtn").onclick;
+  return function(e){
+    sfx("go");
+    if(orig) return orig.call(this, e);
+  };
+})();
 /* =====================================================
    التشغيل
    ===================================================== */
+/* ============ زر كتم الصوت ============ */
+(function initSoundToggle(){
+  const btn = $("soundToggle");
+  if(!btn || !window.SFX) return;
+  function paint(){
+    btn.textContent = window.SFX.isEnabled() ? "🔊" : "🔇";
+    btn.title = window.SFX.isEnabled() ? "كتم الصوت" : "تشغيل الصوت";
+  }
+  paint();
+  btn.onclick = () => {
+    window.SFX.toggle();
+    paint();
+  };
+})();
+
 (async function boot(){
   await loadGameData();
   initUI();
