@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تحدي الصورة</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼️</text></svg>">
+<style>
+:root{
+  --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
+  --accent:#a98467; --accent-strong:#6d8b74; --gold:#c9a227;
+  --text:#3a352f; --muted:#8a8072; --danger:#b85c5c; --ok:#6d8b74;
+  --line:rgba(58,53,47,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:
+    radial-gradient(1000px 600px at 80% -10%,rgba(169,132,103,.18),transparent 60%),
+    radial-gradient(900px 500px at 10% 110%,rgba(109,139,116,.15),transparent 60%),
+    var(--bg);
+  color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+.hidden{display:none!important}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+
+/* ---------- Setup ---------- */
+#setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}
+.setup-card{width:100%;max-width:760px;background:var(--panel);
+  border:1px solid var(--line);border-radius:22px;padding:28px;
+  box-shadow:0 10px 40px rgba(58,53,47,.10)}
+.logo{text-align:center;margin-bottom:22px}
+.logo h1{font-size:clamp(28px,6vw,46px);color:var(--accent-strong);letter-spacing:1px}
+.logo p{color:var(--muted);margin-top:6px}
+.teams-setup{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.team-box{background:rgba(58,53,47,.03);border:1px solid var(--line);border-radius:16px;padding:18px;text-align:center}
+.team-box.t1{border-color:rgba(109,139,116,.45)}
+.team-box.t2{border-color:rgba(169,132,103,.5)}
+.avatar-pick{width:96px;height:96px;border-radius:50%;margin:0 auto 12px;overflow:hidden;position:relative;
+  border:3px solid var(--accent-strong);background:#fff;cursor:pointer;display:block}
+.t2 .avatar-pick{border-color:var(--accent)}
+.avatar-pick img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-pick span{position:absolute;inset:auto 0 0 0;background:rgba(58,53,47,.55);color:#fff;font-size:11px;padding:3px 0}
+.team-box input[type=text]{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);
+  background:#fff;color:var(--text);font-size:16px;text-align:center;font-family:inherit}
+.team-box input[type=text]:focus{outline:2px solid var(--accent-strong)}
+.btn{padding:12px 22px;border-radius:12px;font-size:16px;font-weight:700;transition:.15s transform,.15s filter,.15s opacity}
+.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent-strong);color:#fff}
+.btn-gold{background:var(--gold);color:#3a352f}
+.btn-ghost{background:rgba(58,53,47,.06);border:1px solid var(--line)}
+.btn-danger{background:rgba(184,92,92,.12);border:1px solid var(--danger);color:var(--danger)}
+.start-row{margin-top:24px;text-align:center}
+.start-row .btn{font-size:20px;padding:14px 46px}
+.rules{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.9;text-align:center}
+.loading-msg{text-align:center;color:var(--muted);padding:8px;font-size:14px}
+
+/* ---------- Avatar Picker Modal ---------- */
+#avatarPicker{position:fixed;inset:0;z-index:100;background:rgba(58,53,47,.55);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:16px}
+.picker-card{width:100%;max-width:640px;background:var(--panel);
+  border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(58,53,47,.25);
+  max-height:88vh;overflow:auto}
+.picker-card h3{text-align:center;margin-bottom:14px;color:var(--accent-strong);font-size:20px}
+.picker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.picker-grid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;cursor:pointer;
+  border:3px solid var(--line);transition:.15s;background:#fff}
+.picker-grid img:hover{border-color:var(--gold);transform:scale(1.07)}
+.picker-close{display:block;margin:16px auto 0}
+
+/* ---------- Scoreboard ---------- */
+.scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:18px;padding:12px 16px;position:sticky;top:8px;z-index:10;
+  box-shadow:0 6px 25px rgba(58,53,47,.10)}
+.sb-team{display:flex;align-items:center;gap:12px;min-width:0}
+.sb-team.right{justify-content:flex-start}
+.sb-team.left{justify-content:flex-end;flex-direction:row-reverse}
+.sb-avatar{width:56px;height:56px;border-radius:50%;object-fit:cover;border:3px solid var(--accent-strong);flex:none;background:#fff}
+.left .sb-avatar{border-color:var(--accent)}
+.sb-info{min-width:0}
+.sb-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:22vw}
+.sb-score{font-size:28px;font-weight:800;color:var(--gold);line-height:1.1}
+.sb-score.bump{animation:bump .5s}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.3);color:var(--accent-strong)}100%{transform:scale(1)}}
+.sb-mid{text-align:center}
+.sb-mid .qn{font-size:13px;color:var(--muted)}
+.sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent-strong)}
+
+/* ---------- Timer ---------- */
+.timer-wrap{margin:14px 0 4px;display:flex;align-items:center;gap:12px}
+.timer-bar{flex:1;height:14px;border-radius:99px;background:rgba(58,53,47,.08);overflow:hidden;border:1px solid var(--line)}
+.timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent-strong);
+  transition:width .25s linear,background .3s}
+.timer-num{font-size:24px;font-weight:800;min-width:64px;text-align:center;color:var(--accent-strong);font-variant-numeric:tabular-nums;direction:ltr}
+.tbtn{padding:8px 14px;font-size:14px;white-space:nowrap}
+.timer-num.warn{color:var(--gold)} .timer-num.danger{color:var(--danger)}
+
+/* ---------- Image Area ---------- */
+.image-area{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;
+  margin:16px 0;box-shadow:0 8px 28px rgba(58,53,47,.10);
+}
+.image-box{
+  position:relative;width:100%;
+  aspect-ratio:16/10;
+  border-radius:14px;overflow:hidden;
+  background:#ffffff;
+  border:1px solid var(--line);
+}
+.image-box img{width:100%;height:100%;object-fit:contain;display:block;background:#ffffff}
+
+.hint-box{
+  margin-top:14px;
+  background:linear-gradient(160deg,rgba(201,162,39,.14),rgba(201,162,39,.04));
+  border:1px dashed var(--gold);
+  border-radius:14px;
+  padding:14px 18px;
+  text-align:center;
+  font-size:17px;
+  color:var(--text);
+  line-height:1.7;
+  animation:pop .35s;
+}
+.hint-box .lbl{color:var(--gold);font-weight:800;margin-left:6px}
+@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+
+.answer-box{
+  margin-top:14px;
+  background:linear-gradient(160deg,rgba(201,162,39,.15),rgba(109,139,116,.10));
+  border:2px solid var(--gold);
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+  animation:pop .35s;
+}
+.answer-box .lbl{color:var(--muted);font-size:14px;margin-bottom:6px}
+.answer-box .ans{color:var(--accent-strong);font-size:clamp(26px,5vw,40px);font-weight:800;letter-spacing:.5px}
+
+/* ---------- Award ---------- */
+.award-panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:18px;text-align:center;margin-bottom:14px;
+}
+.award-panel .sub{color:var(--muted);margin-bottom:14px}
+.award-panel .sub b{color:var(--gold)}
+.award{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:12px}
+.award .btn{min-width:150px}
+.award .btn.win1{background:var(--accent-strong);color:#fff}
+.award .btn.win2{background:var(--accent);color:#fff}
+
+.manual-edit{
+  margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);
+  display:none;gap:14px;justify-content:center;flex-wrap:wrap;
+}
+.manual-edit.show{display:flex}
+.manual-team{
+  background:var(--panel2);border-radius:12px;padding:10px 16px;
+  display:flex;align-items:center;gap:12px;border:1px solid var(--line);
+}
+.manual-team .nm{font-weight:700;font-size:14px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.manual-team .sc{font-size:22px;font-weight:800;color:var(--gold);min-width:30px;text-align:center}
+.mini-btn{
+  width:32px;height:32px;border-radius:50%;font-size:18px;font-weight:800;
+  background:rgba(58,53,47,.06);border:1px solid var(--line);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.mini-btn:hover{background:rgba(58,53,47,.14);transform:scale(1.1)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0}
+.award-done{color:var(--ok);font-weight:700;font-size:18px;margin-top:8px}
+
+/* ---------- End ---------- */
+#end{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.end-card{width:100%;max-width:640px;text-align:center;background:var(--panel);
+  border:1px solid rgba(201,162,39,.5);border-radius:22px;padding:30px;box-shadow:0 10px 40px rgba(201,162,39,.15)}
+.end-card h2{font-size:32px;color:var(--gold);margin-bottom:6px}
+.winner-avatar{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);margin:14px auto;display:block;
+  box-shadow:0 0 25px rgba(201,162,39,.35)}
+.final{display:flex;justify-content:center;gap:30px;margin:16px 0 24px;flex-wrap:wrap}
+.final div{background:rgba(58,53,47,.04);padding:12px 22px;border-radius:14px;min-width:140px}
+.final b{display:block;font-size:28px;color:var(--accent-strong)}
+
+@media (max-width:640px){
+  .teams-setup{grid-template-columns:1fr}
+  .sb-avatar{width:42px;height:42px}
+  .sb-score{font-size:22px}
+  .sb-name{font-size:13px;max-width:26vw}
+  .scoreboard{padding:8px 10px;gap:6px}
+  .btn{padding:11px 16px;font-size:15px}
+  .picker-grid{grid-template-columns:repeat(3,1fr)}
+  .image-box{aspect-ratio:4/3}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ شاشة الإعداد ============ -->
+<section id="setup">
+  <div class="setup-card">
+    <div class="logo">
+      <h1>🖼️ تحدي الصورة</h1>
+      <p>صورة واحدة… خمّن ما تدل عليه!</p>
+    </div>
+    <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
+    <div class="teams-setup" id="teamsSetup">
+      <div class="team-box t1">
+        <div class="avatar-pick" id="pick1" title="اضغط لاختيار صورة">
+          <img id="av1" alt="">
+          <span>اختر صورة</span>
+        </div>
+        <input type="text" id="name1" maxlength="18" placeholder="اسم الفريق الأول">
+      </div>
+      <div class="team-box t2">
+        <div class="avatar-pick" id="pick2" title="اضغط لاختيار صورة">
+          <img id="av2" alt="">
+          <span>اختر صورة</span>
+        </div>
+        <input type="text" id="name2" maxlength="18" placeholder="اسم الفريق الثاني">
+      </div>
+    </div>
+    <div class="start-row"><button class="btn btn-primary" id="startBtn">▶ ابدأ المباراة</button></div>
+    <div class="rules" id="rulesBox">
+      لكل سؤال نقطة واحدة للفريق الذي يجيب أولًا<br>
+      مؤقت بلا حد — مع إيقاف / استئناف / إعادة
+    </div>
+  </div>
+</section>
+
+<!-- ============ نافذة اختيار الصورة الرمزية ============ -->
+<div id="avatarPicker" class="hidden">
+  <div class="picker-card">
+    <h3>اختر صورة الفريق</h3>
+    <div class="picker-grid" id="pickerGrid"></div>
+    <button class="btn btn-ghost picker-close" id="pickerClose">إلغاء</button>
+  </div>
+</div>
+
+<!-- ============ شاشة اللعب ============ -->
+<section id="game" class="hidden">
+  <div class="wrap">
+    <div class="scoreboard">
+      <div class="sb-team right">
+        <img class="sb-avatar" id="sbAv1" alt="">
+        <div class="sb-info"><div class="sb-name" id="sbName1"></div><div class="sb-score" id="sbScore1">0</div></div>
+      </div>
+      <div class="sb-mid">
+        <div class="qn" id="qNum"></div>
+        <div class="pts">⭐ <span id="curPts">1</span></div>
+      </div>
+      <div class="sb-team left">
+        <img class="sb-avatar" id="sbAv2" alt="">
+        <div class="sb-info" style="text-align:left"><div class="sb-name" id="sbName2"></div><div class="sb-score" id="sbScore2">0</div></div>
+      </div>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+      <div class="timer-num" id="timerNum">0:00</div>
+      <button class="btn btn-ghost tbtn" id="pauseBtn">⏸ إيقاف</button>
+      <button class="btn btn-ghost tbtn" id="resetTimerBtn">↺ إعادة</button>
+    </div>
+
+    <div class="image-area">
+      <div class="image-box">
+        <img id="qImage" alt="صورة السؤال">
+      </div>
+      <div class="hint-box hidden" id="hintBox">
+        <span class="lbl">💡 تلميح:</span> <span id="hintText"></span>
+      </div>
+      <div class="answer-box hidden" id="answerBox">
+        <div class="lbl">الإجابة الصحيحة</div>
+        <div class="ans" id="ansText"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-gold" id="hintBtn">💡 تلميح</button>
+      <button class="btn btn-primary" id="revealBtn">👁 إظهار الإجابة</button>
+      <button class="btn btn-ghost" id="skipBtn">⏭ تخطي</button>
+    </div>
+
+    <div class="award-panel hidden" id="awardPanel">
+      <div class="sub">من أجاب أولًا؟ سيحصل على <b id="awardPts">1</b> نقطة</div>
+      <div class="award" id="awardBtns">
+        <button class="btn win1" id="award1"></button>
+        <button class="btn win2" id="award2"></button>
+        <button class="btn btn-danger" id="award0">لا أحد</button>
+      </div>
+      <div class="manual-edit" id="manualEdit">
+        <div class="manual-team">
+          <span class="nm" id="mn1"></span>
+          <button class="mini-btn" data-minus="0">−</button>
+          <span class="sc" id="msc1">0</span>
+          <button class="mini-btn" data-plus="0">+</button>
+        </div>
+        <div class="manual-team">
+          <span class="nm" id="mn2"></span>
+          <button class="mini-btn" data-minus="1">−</button>
+          <span class="sc" id="msc2">0</span>
+          <button class="mini-btn" data-plus="1">+</button>
+        </div>
+      </div>
+      <div class="award-done hidden" id="awardDone"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary hidden" id="nextBtn">السؤال التالي ➜</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ شاشة النهاية ============ -->
+<section id="end" class="hidden">
+  <div class="end-card">
+    <h2 id="endTitle">🏆</h2>
+    <img class="winner-avatar" id="winAv" alt="">
+    <div id="winName" style="font-size:26px;font-weight:800"></div>
+    <div class="final">
+      <div><span id="fName1"></span><b id="fScore1">0</b></div>
+      <div><span id="fName2"></span><b id="fScore2">0</b></div>
+    </div>
+    <button class="btn btn-primary" id="againBtn">🔄 لعب من جديد</button>
+  </div>
+</section>
+
+<script>
+/* =====================================================
+   الإعدادات الافتراضية (تُستبدل من questions-single.json)
+   ===================================================== */
+let CONFIG = {
+  BAR_CYCLE_SECONDS: 30,
+  QUESTIONS_COUNT: 15,
+  SHUFFLE_QUESTIONS: false,
+  DEFAULT_TEAM_NAMES: ["الفريق الأول", "الفريق الثاني"],
+  POINTS_PER_QUESTION: 1
+};
+
+let AVATARS = [];
+let QUESTIONS = [];
+
+/* =====================================================
+   تحميل البيانات
+   ===================================================== */
+async function loadGameData(){
+  try{
+    const r = await fetch("questions-single.json?v=" + Date.now());
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    const j = await r.json();
+    if(j.config) CONFIG = Object.assign({}, CONFIG, j.config);
+    AVATARS = j.avatars || [];
+    QUESTIONS = j.questions || [];
+  }catch(e){
+    console.warn("تعذّر تحميل questions-single.json:", e);
+    QUESTIONS = [{ answer:"مثال", hint:"", image:"" }];
+  }
+}
+
+/* =====================================================
+   أدوات
+   ===================================================== */
+const $ = id => document.getElementById(id);
+const svgURI = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+function imgURL(v){ return /^(https?:|data:)/.test(v) ? v : "https://images.unsplash.com/" + v + "?auto=format&fit=crop&w=900&q=75"; }
+function fallbackImg(txt){
+  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"><rect width="800" height="500" fill="#ffffff"/><text x="400" y="270" font-size="80" text-anchor="middle" fill="#cccccc">🖼️</text><text x="400" y="330" font-size="22" text-anchor="middle" fill="#999999">${txt||"لا توجد صورة"}</text></svg>`);
+}
+function defaultAvatar(color){
+  return svgURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#efe7d8"/><circle cx="50" cy="38" r="20" fill="${color}"/><path d="M12 100c0-26 17-40 38-40s38 14 38 40z" fill="${color}"/></svg>`);
+}
+const DEF_AV = [defaultAvatar("#6d8b74"), defaultAvatar("#a98467")];
+
+/* =====================================================
+   الحالة
+   ===================================================== */
+let teams = [
+  { name:"", avatar:DEF_AV[0], score:0 },
+  { name:"", avatar:DEF_AV[1], score:0 }
+];
+let quiz = [], qi = 0, timerId = null, qState = "idle";
+let elapsedMs = 0, running = false, lastTick = 0;
+
+/* =====================================================
+   التهيئة
+   ===================================================== */
+function initUI(){
+  $("av1").src = DEF_AV[0];
+  $("av2").src = DEF_AV[1];
+  $("loadingMsg").classList.add("hidden");
+  $("teamsSetup").classList.remove("hidden");
+  $("rulesBox").innerHTML =
+    `${CONFIG.QUESTIONS_COUNT} سؤالًا • نقطة واحدة لكل سؤال<br>` +
+    `مؤقت بلا حد — مع إيقاف / استئناف / إعادة`;
+
+  if(!AVATARS.length){
+    $("pick1").onclick = null;
+    $("pick2").onclick = null;
+  }
+}
+
+function openPicker(idx){
+  if(!AVATARS.length){ alert("لا توجد صور رمزية. أضفها من الداشبورد."); return; }
+  const grid = $("pickerGrid");
+  grid.innerHTML = "";
+  AVATARS.forEach(src => {
+    const img = document.createElement("img");
+    img.src = src; img.alt = "صورة";
+    img.onerror = () => { img.style.opacity = ".25"; };
+    img.onclick = () => {
+      teams[idx].avatar = src;
+      $(idx === 0 ? "av1" : "av2").src = src;
+      closePicker();
+    };
+    grid.appendChild(img);
+  });
+  $("avatarPicker").classList.remove("hidden");
+}
+function closePicker(){ $("avatarPicker").classList.add("hidden"); }
+
+$("pick1").onclick = () => openPicker(0);
+$("pick2").onclick = () => openPicker(1);
+$("pickerClose").onclick = closePicker;
+$("avatarPicker").onclick = e => { if(e.target.id === "avatarPicker") closePicker(); };
+
+$("startBtn").onclick = () => {
+  if(!QUESTIONS.length){ alert("لا توجد أسئلة. أضفها من الداشبورد أولًا."); return; }
+  teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
+  teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
+  teams[0].score = teams[1].score = 0;
+
+  quiz = QUESTIONS.slice(0, CONFIG.QUESTIONS_COUNT);
+  if(CONFIG.SHUFFLE_QUESTIONS) quiz = quiz.map(q=>[Math.random(),q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+  qi = 0;
+
+  $("sbAv1").src = teams[0].avatar;  $("sbAv2").src = teams[1].avatar;
+  $("sbName1").textContent = teams[0].name; $("sbName2").textContent = teams[1].name;
+  $("award1").textContent = "✔ " + teams[0].name;
+  $("award2").textContent = "✔ " + teams[1].name;
+  $("mn1").textContent = teams[0].name;
+  $("mn2").textContent = teams[1].name;
+  updateScores();
+
+  $("setup").classList.add("hidden");
+  $("end").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  loadQuestion();
+};
+
+/* =====================================================
+   منطق اللعبة
+   ===================================================== */
+function updateScores(bumpIdx){
+  $("sbScore1").textContent = teams[0].score;
+  $("sbScore2").textContent = teams[1].score;
+  if(bumpIdx !== undefined){
+    const el = $("sbScore"+(bumpIdx+1));
+    el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  }
+}
+
+function loadQuestion(){
+  clearInterval(timerId);
+  const q = quiz[qi];
+  qState = "playing";
+  $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
+  $("curPts").textContent = CONFIG.POINTS_PER_QUESTION;
+
+  const im = $("qImage");
+  im.onerror = () => { im.onerror = null; im.src = fallbackImg(q.answer); };
+  im.src = q.image ? imgURL(q.image) : fallbackImg(q.answer);
+
+  $("hintBox").classList.add("hidden");
+  $("hintText").textContent = "";
+  $("answerBox").classList.add("hidden");
+  $("ansText").textContent = "";
+
+  $("awardPanel").classList.add("hidden");
+  $("awardBtns").classList.remove("hidden");
+  $("manualEdit").classList.remove("show");
+  $("awardDone").classList.add("hidden");
+  $("nextBtn").classList.add("hidden");
+
+  $("hintBtn").disabled = false;
+  $("revealBtn").disabled = false;
+  $("skipBtn").disabled = false;
+  $("nextBtn").textContent = (qi === quiz.length-1) ? "🏁 إنهاء المباراة" : "السؤال التالي ➜";
+
+  startTimer();
+}
+
+/* ---------- المؤقت ---------- */
+function startTimer(){
+  clearInterval(timerId);
+  elapsedMs = 0; running = true; lastTick = Date.now();
+  setTimerBtns(true); paintTimer();
+  timerId = setInterval(tick, 100);
+}
+function tick(){
+  if(!running) return;
+  const now = Date.now(); elapsedMs += now - lastTick; lastTick = now; paintTimer();
+}
+function toggleTimer(){
+  if(qState !== "playing") return;
+  if(running){ running = false; } else { running = true; lastTick = Date.now(); }
+  paintTimer();
+}
+function resetTimer(){
+  if(qState !== "playing") return;
+  elapsedMs = 0; running = true; lastTick = Date.now(); paintTimer();
+}
+function setTimerBtns(on){ $("pauseBtn").disabled = !on; $("resetTimerBtn").disabled = !on; }
+function paintTimer(){
+  const secs = Math.floor(elapsedMs / 1000);
+  const m = Math.floor(secs / 60), s = secs % 60;
+  const cycle = CONFIG.BAR_CYCLE_SECONDS * 1000;
+  const ratio = (elapsedMs % cycle) / cycle;
+  const f = $("timerFill"), n = $("timerNum");
+  f.style.width = Math.max(ratio * 100, 1) + "%";
+  f.style.background = ratio < .5 ? "var(--accent-strong)" : ratio < .75 ? "var(--gold)" : "var(--danger)";
+  n.textContent = m + ":" + String(s).padStart(2, "0");
+  n.className = "timer-num" + (ratio >= .75 ? " danger" : ratio >= .5 ? " warn" : "");
+  $("pauseBtn").textContent = running ? "⏸ إيقاف" : "▶ استئناف";
+}
+
+/* ---------- تلميح ---------- */
+function showHint(){
+  if(qState !== "playing") return;
+  const q = quiz[qi];
+  if(!q.hint){ alert("لا يوجد تلميح لهذا السؤال"); return; }
+  $("hintText").textContent = q.hint;
+  $("hintBox").classList.remove("hidden");
+  $("hintBtn").disabled = true;
+}
+
+/* ---------- إظهار الإجابة ---------- */
+function revealAnswer(){
+  if(qState !== "playing") return;
+  qState = "revealed";
+  running = false; clearInterval(timerId); setTimerBtns(false); paintTimer();
+  const q = quiz[qi];
+  $("ansText").textContent = q.answer || "—";
+  $("answerBox").classList.remove("hidden");
+  $("hintBtn").disabled = true;
+  $("revealBtn").disabled = true;
+  $("skipBtn").disabled = true;
+
+  $("awardPts").textContent = CONFIG.POINTS_PER_QUESTION;
+  $("awardPanel").classList.remove("hidden");
+  $("awardPanel").scrollIntoView({behavior:"smooth", block:"center"});
+}
+
+/* ---------- منح النقطة ---------- */
+function award(idx){
+  if(qState !== "revealed") return;
+  qState = "done";
+  const pts = CONFIG.POINTS_PER_QUESTION;
+  if(idx >= 0){
+    teams[idx].score += pts;
+    updateScores(idx);
+    $("awardDone").textContent = `🎉 ${teams[idx].name} حصل على ${pts} نقطة`;
+  } else {
+    $("awardDone").textContent = "لم تُحتسب نقاط لهذا السؤال";
+  }
+  $("awardBtns").classList.add("hidden");
+  $("awardDone").classList.remove("hidden");
+  $("manualEdit").classList.add("show");
+  updateManualUI();
+  $("nextBtn").classList.remove("hidden");
+}
+
+function updateManualUI(){
+  $("msc1").textContent = teams[0].score;
+  $("msc2").textContent = teams[1].score;
+}
+
+document.querySelectorAll("[data-plus]").forEach(b => {
+  b.onclick = () => {
+    const i = parseInt(b.dataset.plus);
+    teams[i].score++;
+    updateScores(i); updateManualUI();
+    $("awardDone").textContent = `✏️ ${teams[i].name}: ${teams[i].score} نقطة`;
+  };
+});
+document.querySelectorAll("[data-minus]").forEach(b => {
+  b.onclick = () => {
+    const i = parseInt(b.dataset.minus);
+    if(teams[i].score > 0){ teams[i].score--; }
+    updateScores(i); updateManualUI();
+    $("awardDone").textContent = `✏️ ${teams[i].name}: ${teams[i].score} نقطة`;
+  };
+});
+
+/* ---------- التنقل ---------- */
+function nextQuestion(){
+  if(qi >= quiz.length - 1){ return endGame(); }
+  qi++; loadQuestion();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+function skipQuestion(){
+  if(qState !== "playing") return;
+  clearInterval(timerId); qState = "done"; nextQuestion();
+}
+
+function endGame(){
+  clearInterval(timerId);
+  $("game").classList.add("hidden");
+  $("end").classList.remove("hidden");
+  const [a, b] = teams;
+  $("fName1").textContent = a.name; $("fScore1").textContent = a.score;
+  $("fName2").textContent = b.name; $("fScore2").textContent = b.score;
+  if(a.score === b.score){
+    $("endTitle").textContent = "🤝 تعادل!";
+    $("winAv").classList.add("hidden");
+    $("winName").textContent = "نتيجة متساوية";
+  } else {
+    const w = a.score > b.score ? a : b;
+    $("endTitle").textContent = "🏆 الفائز";
+    $("winAv").classList.remove("hidden");
+    $("winAv").src = w.avatar;
+    $("winName").textContent = w.name;
+  }
+}
+
+/* ---------- الأزرار ---------- */
+$("pauseBtn").onclick      = toggleTimer;
+$("resetTimerBtn").onclick = resetTimer;
+$("hintBtn").onclick       = showHint;
+$("revealBtn").onclick     = revealAnswer;
+$("skipBtn").onclick       = skipQuestion;
+$("nextBtn").onclick       = nextQuestion;
+$("award1").onclick        = () => award(0);
+$("award2").onclick        = () => award(1);
+$("award0").onclick        = () => award(-1);
+$("againBtn").onclick      = () => {
+  $("end").classList.add("hidden");
+  $("setup").classList.remove("hidden");
+};
+
+/* =====================================================
+   التشغيل
+   ===================================================== */
+(async function boot(){
+  await loadGameData();
+  initUI();
+})();
+</script>
+</body>
+</html>
