@@ -13,7 +13,11 @@
     "SOLO_POINTS": 1,
     "SOLO_MATCH_MODE": "flexible"
   },
-  "avatars": [],
+  "avatars": [
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWHOOuUD3OvlqNY7iHWTWGClyLn9EGz-Nfo9xW3NaxbQ&s",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKTzHlZ3PfYCvyPv-QOif1N9vQyDO46Ts2IPcUbAs7R3OraGM0pMPEis_L&s=10",
+    "https://yt3.googleusercontent.com/ytc/AIdro_njtHqxbsMPGM_5Yrlqsceuj8gr2kxKhfdPp68txVxZjd4=s900-c-k-c0x00ffffff-no-rj"
+  ],
   "questions": [
     {
       "answer": "طبرجل",
