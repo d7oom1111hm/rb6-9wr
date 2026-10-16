@@ -28,6 +28,34 @@
       "alternatives": [
         "كومبارس"
       ]
+    },
+    {
+      "answer": "بولينق",
+      "hint": "رياضة",
+      "image": "https://i.imgur.com/idSugzT.png",
+      "alternatives": [
+        "بولنق",
+        "بولنج",
+        "بولينج"
+      ]
+    },
+    {
+      "answer": "اوبينهايمر",
+      "hint": "فلم",
+      "image": "https://i.imgur.com/MaFImFT.png",
+      "alternatives": [
+        "اوبنهايمر",
+        "اوبنهايمر",
+        "أوبينهايمر"
+      ]
+    },
+    {
+      "answer": "رياضات الكترونية",
+      "hint": "بطولة ",
+      "image": "https://i.imgur.com/VIAlCY1.png",
+      "alternatives": [
+        "رياضات الكترونيه"
+      ]
     }
   ]
 }
