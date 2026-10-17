@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الدودة والتفاحة</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐍</text></svg>">
+<style>
+:root{
+  --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
+  --accent:#6d8b74; --accent2:#a98467; --gold:#c9a227;
+  --text:#3a352f; --muted:#8a8072; --danger:#b85c5c; --ok:#6d8b74;
+  --line:rgba(58,53,47,.12);
+  --snake:#6d8b74;
+  --snake-head:#4f6b56;
+  --apple:#c96b6b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  background:radial-gradient(1000px 600px at 80% -10%,rgba(169,132,103,.18),transparent 60%),
+             radial-gradient(900px 500px at 10% 110%,rgba(109,139,116,.15),transparent 60%),var(--bg);
+  color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:16px;
+  overflow-x:hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+.hidden{display:none!important}
+
+/* ---------- شاشة البداية ---------- */
+#startScreen{width:100%;max-width:560px;margin:auto}
+.start-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px;
+  box-shadow:0 10px 40px rgba(58,53,47,.10);
+}
+.logo{text-align:center;margin-bottom:22px}
+.logo h1{font-size:clamp(28px,6vw,42px);color:var(--accent);letter-spacing:1px}
+.logo p{color:var(--muted);margin-top:6px;font-size:15px}
+
+.diff-title{text-align:center;color:var(--muted);font-size:14px;margin-bottom:12px;font-weight:700}
+.diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+.diff-btn{
+  background:rgba(58,53,47,.03);border:2px solid var(--line);border-radius:16px;
+  padding:18px 10px;text-align:center;transition:.2s;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.diff-btn:hover{border-color:var(--gold);transform:translateY(-3px)}
+.diff-btn.active{border-color:var(--accent);background:linear-gradient(160deg,rgba(109,139,116,.12),rgba(109,139,116,.04))}
+.diff-btn .ic{font-size:32px}
+.diff-btn .nm{font-size:15px;font-weight:700;color:var(--text)}
+.diff-btn .bs{font-size:11px;color:var(--muted)}
+
+.btn{padding:12px 22px;border-radius:12px;font-size:16px;font-weight:700;transition:.15s transform,.15s filter}
+.btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.05)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-ghost{background:rgba(58,53,47,.06);border:1px solid var(--line)}
+
+.start-row{text-align:center;margin-top:8px}
+.start-row .btn{font-size:20px;padding:14px 46px}
+
+.best-line{
+  text-align:center;margin-top:18px;padding:12px;
+  background:linear-gradient(160deg,rgba(201,162,39,.12),rgba(201,162,39,.03));
+  border:1px dashed var(--gold);border-radius:12px;font-size:15px;
+}
+.best-line b{color:var(--gold);font-size:18px}
+
+.help-box{margin-top:14px;padding:14px;background:rgba(58,53,47,.03);border-radius:12px;font-size:13px;color:var(--muted);line-height:1.9;text-align:center}
+.help-box b{color:var(--text)}
+
+/* ---------- شاشة اللعب ---------- */
+#gameScreen{width:100%;max-width:560px}
+.hud{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:12px 18px;margin-bottom:12px;
+  box-shadow:0 4px 16px rgba(58,53,47,.06);
+}
+.hud-item{text-align:center;flex:1}
+.hud-item .lbl{font-size:11px;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}
+.hud-item .val{font-size:24px;font-weight:800;color:var(--accent);line-height:1}
+.hud-item .val.gold{color:var(--gold)}
+
+.board-wrap{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:12px;box-shadow:0 8px 28px rgba(58,53,47,.10);
+}
+#board{
+  width:100%;
+  aspect-ratio:1;
+  display:grid;
+  grid-template-columns:repeat(15,1fr);
+  grid-template-rows:repeat(15,1fr);
+  gap:1px;
+  background:var(--panel2);
+  border-radius:12px;
+  padding:4px;
+  position:relative;
+  overflow:hidden;
+  direction:ltr;
+}
+
+.cell.snake{background:var(--snake);border-radius:4px}
+.cell.snake.head{background:var(--snake-head);border-radius:6px;position:relative}
+.cell.snake.head::after{
+  content:"";position:absolute;inset:20%;
+  background:radial-gradient(circle at 30% 30%, #fff 1px, transparent 2px),
+             radial-gradient(circle at 70% 30%, #fff 1px, transparent 2px);
+  background-size:50% 50%;
+  background-repeat:no-repeat;
+}
+.cell.apple{background:var(--apple);border-radius:50%;animation:applePulse 1s infinite}
+@keyframes applePulse{
+  0%,100%{transform:scale(.85);box-shadow:0 0 0 0 rgba(201,107,107,.5)}
+  50%{transform:scale(1);box-shadow:0 0 0 6px rgba(201,107,107,0)}
+}
+
+/* أزرار التحكم للجوال */
+.controls-pad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  gap:8px;
+  max-width:240px;
+  margin:16px auto 0;
+  aspect-ratio:1;
+}
+.pad-btn{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  font-size:28px;display:flex;align-items:center;justify-content:center;
+  transition:.1s;user-select:none;-webkit-tap-highlight-color:transparent;
+  box-shadow:0 2px 8px rgba(58,53,47,.08);
+}
+.pad-btn:active{background:var(--accent);color:#fff;transform:scale(.95)}
+.pad-btn.up{grid-column:2;grid-row:1}
+.pad-btn.left{grid-column:1;grid-row:2}
+.pad-btn.right{grid-column:3;grid-row:2}
+.pad-btn.down{grid-column:2;grid-row:3}
+
+/* ---------- شاشة النهاية ---------- */
+#endScreen{width:100%;max-width:560px;margin:auto}
+.end-card{
+  background:var(--panel);border:1px solid rgba(201,162,39,.5);border-radius:22px;
+  padding:30px;text-align:center;
+  box-shadow:0 10px 40px rgba(201,162,39,.15);
+}
+.end-card h2{font-size:32px;color:var(--gold);margin-bottom:6px}
+.end-sub{color:var(--muted);margin-bottom:20px}
+.end-stats{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:20px 0}
+.end-stat{background:rgba(58,53,47,.04);padding:16px 24px;border-radius:14px;min-width:120px}
+.end-stat .num{font-size:32px;font-weight:800;color:var(--accent)}
+.end-stat .lbl{font-size:13px;color:var(--muted);margin-top:4px}
+.end-stat.gold .num{color:var(--gold)}
+.new-best{
+  display:inline-block;background:var(--gold);color:#3a352f;
+  padding:6px 18px;border-radius:99px;font-weight:800;font-size:14px;
+  margin-bottom:14px;animation:pop .5s;
+}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* زر الرجوع */
+.home-btn{
+  position:fixed;bottom:18px;right:18px;z-index:200;
+  width:52px;height:52px;border-radius:50%;font-size:22px;
+  background:#fbf7ef;border:1px solid rgba(58,53,47,.15);
+  box-shadow:0 4px 14px rgba(58,53,47,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;text-decoration:none;color:var(--text);
+}
+.home-btn:hover{transform:scale(1.08);background:#efe7d8}
+
+@media (max-width:640px){
+  .hud-item .val{font-size:20px}
+  .diff-grid{gap:8px}
+  .diff-btn{padding:14px 6px}
+  .diff-btn .ic{font-size:26px}
+  .diff-btn .nm{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ شاشة البداية ============ -->
+<section id="startScreen">
+  <div class="start-card">
+    <div class="logo">
+      <h1>🐍 الدودة والتفاحة</h1>
+      <p>كُل التفاح، واكبر أطول دودة!</p>
+    </div>
+
+    <div class="diff-title">اختر مستوى الصعوبة</div>
+    <div class="diff-grid">
+      <div class="diff-btn" data-diff="easy">
+        <div class="ic">🟢</div>
+        <div class="nm">سهل</div>
+        <div class="bs">سرعة بطيئة</div>
+      </div>
+      <div class="diff-btn active" data-diff="medium">
+        <div class="ic">🟡</div>
+        <div class="nm">متوسط</div>
+        <div class="bs">سرعة عادية</div>
+      </div>
+      <div class="diff-btn" data-diff="hard">
+        <div class="ic">🔴</div>
+        <div class="nm">صعب</div>
+        <div class="bs">سرعة عالية</div>
+      </div>
+    </div>
+
+    <div class="best-line" id="bestLine">
+      🏆 أفضل نتيجة: <b id="bestVal">0</b>
+    </div>
+
+    <div class="start-row">
+      <button class="btn btn-primary" id="startBtn" onclick="if(window.SFX)window.SFX.play('go')">▶ ابدأ اللعب</button>
+    </div>
+
+    <div class="help-box">
+      <b>التحكم:</b> أسهم الكيبورد • أزرار الشاشة • السحب بالإصبع<br>
+      <b>الهدف:</b> أكل التفاح — كل تفاحة +1 نقطة
+    </div>
+  </div>
+</section>
+
+<!-- ============ شاشة اللعب ============ -->
+<section id="gameScreen" class="hidden">
+  <div class="hud">
+    <div class="hud-item">
+      <div class="lbl">النقاط</div>
+      <div class="val" id="scoreVal">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="lbl">الصعوبة</div>
+      <div class="val" id="diffVal" style="font-size:18px">🟡</div>
+    </div>
+    <div class="hud-item">
+      <div class="lbl">أفضل</div>
+      <div class="val gold" id="bestVal2">0</div>
+    </div>
+  </div>
+
+  <div class="board-wrap">
+    <div id="board"></div>
+  </div>
+
+  <div class="controls-pad">
+    <button class="pad-btn up"    data-dir="up">▲</button>
+    <button class="pad-btn left"  data-dir="left">◀</button>
+    <button class="pad-btn right" data-dir="right">▶</button>
+    <button class="pad-btn down"  data-dir="down">▼</button>
+  </div>
+</section>
+
+<!-- ============ شاشة النهاية ============ -->
+<section id="endScreen" class="hidden">
+  <div class="end-card">
+    <h2>💀 انتهت اللعبة!</h2>
+    <div class="end-sub" id="endSub">اصطدمت!</div>
+    <div class="new-best hidden" id="newBest">🎉 رقم قياسي جديد!</div>
+    <div class="end-stats">
+      <div class="end-stat">
+        <div class="num" id="endScore">0</div>
+        <div class="lbl">نقاطك</div>
+      </div>
+      <div class="end-stat gold">
+        <div class="num" id="endBest">0</div>
+        <div class="lbl">أفضل نتيجة</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="againBtn">🔄 العب من جديد</button>
+  </div>
+</section>
+
+<a href="index.html" class="home-btn" title="الرجوع للرئيسية">🏠</a>
+<button id="soundToggle" title="كتم الصوت" style="position:fixed;bottom:18px;left:18px;z-index:200;width:52px;height:52px;border-radius:50%;font-size:22px;background:#fbf7ef;border:1px solid rgba(58,53,47,.15);box-shadow:0 4px 14px rgba(58,53,47,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s">🔊</button>
+
+<script src="sounds.js"></script>
+<script>
+/* =====================================================
+   الإعدادات
+   ===================================================== */
+const SIZE = 15;
+const DIFFS = {
+  easy:   { name:"سهل",   icon:"🟢", startSpeed:200, speedUp:8,  minSpeed:120 },
+  medium: { name:"متوسط", icon:"🟡", startSpeed:140, speedUp:5,  minSpeed:80  },
+  hard:   { name:"صعب",   icon:"🔴", startSpeed:90,  speedUp:3,  minSpeed:55  }
+};
+
+/* =====================================================
+   الحالة
+   ===================================================== */
+let difficulty = "medium";
+let snake = [];
+let dir = { x: 0, y: 0 };
+let nextDir = { x: 0, y: 0 };
+let apple = { x: 0, y: 0 };
+let score = 0;
+let speed = 140;
+let timerId = null;
+let gameRunning = false;
+let eaten = 0;
+
+/* =====================================================
+   أدوات
+   ===================================================== */
+const $ = id => document.getElementById(id);
+const sfx = n => { if(window.SFX) window.SFX.play(n); };
+
+function getBestKey(diff){ return "snake_best_" + diff; }
+function getBest(diff){
+  try{ return parseInt(localStorage.getItem(getBestKey(diff)) || "0"); }
+  catch(e){ return 0; }
+}
+function setBest(diff, val){
+  try{ localStorage.setItem(getBestKey(diff), String(val)); }catch(e){}
+}
+
+/* =====================================================
+   اختيار الصعوبة
+   ===================================================== */
+document.querySelectorAll(".diff-btn").forEach(b => {
+  b.onclick = () => {
+    sfx("click");
+    document.querySelectorAll(".diff-btn").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    difficulty = b.dataset.diff;
+    updateBestLine();
+  };
+});
+
+function updateBestLine(){
+  $("bestVal").textContent = getBest(difficulty);
+}
+
+/* =====================================================
+   بناء الشبكة
+   ===================================================== */
+function buildBoard(){
+  const board = $("board");
+  board.innerHTML = "";
+  for(let i = 0; i < SIZE * SIZE; i++){
+    const c = document.createElement("div");
+    c.className = "cell";
+    c.dataset.idx = i;
+    board.appendChild(c);
+  }
+}
+function cellAt(x, y){
+  return $("board").children[y * SIZE + x];
+}
+function paintBoard(){
+  // إزالة الفئات القديمة
+  document.querySelectorAll(".cell").forEach(c => {
+    c.className = "cell";
+  });
+  // التفاحة
+  if(apple){ cellAt(apple.x, apple.y).classList.add("apple"); }
+  // الدودة
+  snake.forEach((seg, i) => {
+    const c = cellAt(seg.x, seg.y);
+    if(c){
+      c.classList.add("snake");
+      if(i === 0) c.classList.add("head");
+    }
+  });
+}
+
+/* =====================================================
+   منطق اللعبة
+   ===================================================== */
+function resetGame(){
+  const cfg = DIFFS[difficulty];
+  speed = cfg.startSpeed;
+  eaten = 0;
+  score = 0;
+  // الدودة في الوسط، طول 3
+  const mid = Math.floor(SIZE / 2);
+  snake = [
+    { x: mid, y: mid },
+    { x: mid - 1, y: mid },
+    { x: mid - 2, y: mid }
+  ];
+  dir = { x: 1, y: 0 };
+  nextDir = { x: 1, y: 0 };
+  placeApple();
+  $("scoreVal").textContent = 0;
+  $("diffVal").textContent = cfg.icon;
+  $("bestVal2").textContent = getBest(difficulty);
+  paintBoard();
+}
+
+function placeApple(){
+  let attempts = 0;
+  while(attempts < 500){
+    const x = Math.floor(Math.random() * SIZE);
+    const y = Math.floor(Math.random() * SIZE);
+    if(!snake.some(s => s.x === x && s.y === y)){
+      apple = { x, y };
+      return;
+    }
+    attempts++;
+  }
+}
+
+function tick(){
+  if(!gameRunning) return;
+
+  // تحديث الاتجاه
+  if(nextDir.x !== 0 || nextDir.y !== 0){
+    // منع الرجوع للخلف
+    if(!(nextDir.x === -dir.x && nextDir.y === -dir.y)){
+      dir = { ...nextDir };
+    }
+  }
+
+  const head = snake[0];
+  const newHead = { x: head.x + dir.x, y: head.y + dir.y };
+
+  // اصطدام بالحائط
+  if(newHead.x < 0 || newHead.x >= SIZE || newHead.y < 0 || newHead.y >= SIZE){
+    return endGame("اصطدمت بالحائط!");
+  }
+  // اصطدام بالنفس (نتجاهل الذيل إذا بنطلعه)
+  const willEat = (newHead.x === apple.x && newHead.y === apple.y);
+  const bodyToCheck = willEat ? snake : snake.slice(0, -1);
+  if(bodyToCheck.some(s => s.x === newHead.x && s.y === newHead.y)){
+    return endGame("اصطدمت بنفسك!");
+  }
+
+  // حركة
+  snake.unshift(newHead);
+  if(willEat){
+    score++;
+    eaten++;
+    $("scoreVal").textContent = score;
+    sfx("eat");
+    // زيادة السرعة
+    const cfg = DIFFS[difficulty];
+    if(eaten % cfg.speedUp === 0 && speed > cfg.minSpeed){
+      speed = Math.max(cfg.minSpeed, speed - 10);
+      restartTimer();
+    }
+    placeApple();
+  } else {
+    snake.pop();
+  }
+
+  paintBoard();
+}
+
+function restartTimer(){
+  clearInterval(timerId);
+  timerId = setInterval(tick, speed);
+}
+
+function endGame(reason){
+  gameRunning = false;
+  clearInterval(timerId);
+  sfx("fail");
+  const cfg = DIFFS[difficulty];
+  const best = getBest(difficulty);
+  const isNewBest = score > best;
+  if(isNewBest){ setBest(difficulty, score); }
+
+  $("endSub").textContent = reason;
+  $("endScore").textContent = score;
+  $("endBest").textContent = isNewBest ? score : best;
+  $("newBest").classList.toggle("hidden", !isNewBest);
+
+  $("gameScreen").classList.add("hidden");
+  $("endScreen").classList.remove("hidden");
+  if(isNewBest) sfx("win");
+}
+
+/* =====================================================
+   بدء اللعب
+   ===================================================== */
+function startGame(){
+  $("startScreen").classList.add("hidden");
+  $("endScreen").classList.add("hidden");
+  $("gameScreen").classList.remove("hidden");
+  buildBoard();
+  resetGame();
+  gameRunning = true;
+  restartTimer();
+}
+
+$("startBtn").onclick = startGame;
+$("againBtn").onclick = () => {
+  sfx("click");
+  $("endScreen").classList.add("hidden");
+  $("startScreen").classList.remove("hidden");
+  updateBestLine();
+};
+
+/* =====================================================
+   التحكم
+   ===================================================== */
+function setDir(d){
+  if(!gameRunning) return;
+  const map = {
+    up:    { x: 0,  y: -1 },
+    down:  { x: 0,  y: 1 },
+    left:  { x: -1, y: 0 },
+    right: { x: 1,  y: 0 }
+  };
+  const nd = map[d];
+  if(!nd) return;
+  // منع الرجوع الفوري
+  if(nd.x === -dir.x && nd.y === -dir.y) return;
+  nextDir = nd;
+}
+
+// كيبورد
+document.addEventListener("keydown", e => {
+  const k = e.key;
+  if(k === "ArrowUp" || k === "w" || k === "W"){ e.preventDefault(); setDir("up"); }
+  else if(k === "ArrowDown" || k === "s" || k === "S"){ e.preventDefault(); setDir("down"); }
+  else if(k === "ArrowLeft" || k === "a" || k === "A"){ e.preventDefault(); setDir("left"); }
+  else if(k === "ArrowRight" || k === "d" || k === "D"){ e.preventDefault(); setDir("right"); }
+});
+
+// أزرار الشاشة
+document.querySelectorAll(".pad-btn").forEach(b => {
+  b.onclick = () => { sfx("click"); setDir(b.dataset.dir); };
+});
+
+// سحب بالإصبع
+let touchStart = null;
+document.addEventListener("touchstart", e => {
+  if(!gameRunning) return;
+  const t = e.touches[0];
+  touchStart = { x: t.clientX, y: t.clientY };
+}, { passive: true });
+document.addEventListener("touchend", e => {
+  if(!gameRunning || !touchStart) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStart.x;
+  const dy = t.clientY - touchStart.y;
+  const absX = Math.abs(dx), absY = Math.abs(dy);
+  if(Math.max(absX, absY) < 30){ touchStart = null; return; }
+  if(absX > absY){
+    setDir(dx > 0 ? "right" : "left");
+  } else {
+    setDir(dy > 0 ? "down" : "up");
+  }
+  touchStart = null;
+}, { passive: true });
+
+/* =====================================================
+   زر كتم الصوت
+   ===================================================== */
+(function initSoundToggle(){
+  const btn = $("soundToggle");
+  if(!btn || !window.SFX) return;
+  function paint(){
+    btn.textContent = window.SFX.isEnabled() ? "🔊" : "🔇";
+    btn.title = window.SFX.isEnabled() ? "كتم الصوت" : "تشغيل الصوت";
+  }
+  paint();
+  btn.onclick = () => {
+    window.SFX.toggle();
+    paint();
+  };
+})();
+
+/* =====================================================
+   تشغيل
+   ===================================================== */
+updateBestLine();
+</script>
+</body>
+</html>

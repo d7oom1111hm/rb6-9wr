@@ -78,6 +78,16 @@ body{
 }
 .game-card.single .game-icon{
   background:linear-gradient(160deg,rgba(74,74,74,.14),rgba(201,162,39,.10));
+.game-card.snake::before{
+  background:linear-gradient(90deg,#6d8b74,#c96b6b);
+}
+.game-card.snake .game-icon{
+  background:linear-gradient(160deg,rgba(109,139,116,.14),rgba(201,107,107,.10));
+}
+.game-card.snake .btn-play{
+  background:#6d8b74;
+  box-shadow:0 4px 14px rgba(109,139,116,.30);
+}
 }
 .game-card h2{
   font-size:24px;margin-bottom:10px;color:var(--text);
@@ -121,10 +131,13 @@ body{
 }
 
 @media (max-width:720px){
-  .games-grid{grid-template-columns:1fr;gap:18px}
-  .hero{margin-bottom:34px}
-  .game-card{padding:26px 20px 20px}
-  .game-icon{width:78px;height:78px;font-size:38px;border-radius:18px}
+  .g.games-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:26px;
+  max-width:960px;
+  width:100%;
+}
 }
 </style>
 </head>
@@ -152,17 +165,30 @@ body{
     </div>
   </div>
 
-  <!-- لعبة تحدي الصورة -->
+    <!-- لعبة تحدي الصورة -->
   <div class="game-card single">
     <div class="game-icon">🖼️</div>
-    <h2>كملها بعقلك</h2>
+    <h2>تحدي الصورة</h2>
     <p class="desc">
       صورة واضحة… خمّن ما تدل عليه قبل أن ينتهي الوقت.
       استعن بالتلميح إن احترت.
     </p>
     <div class="actions">
       <a href="single-game.html" class="btn btn-play">▶ ابدأ اللعب</a>
-      <a href="single-dashboard.html" class="btn btn-dash"> لوحة التحكم</a>
+      <a href="single-dashboard.html" class="btn btn-dash">⚙️ لوحة التحكم</a>
+    </div>
+  </div>
+
+  <!-- لعبة الدودة والتفاحة -->
+  <div class="game-card snake">
+    <div class="game-icon">🐍</div>
+    <h2>الدودة والتفاحة</h2>
+    <p class="desc">
+      كُل التفاح واكبر أطول دودة! تحكم بالدودة عبر الكيبورد أو السحب،
+      واحذر من الاصطدام.
+    </p>
+    <div class="actions">
+      <a href="snake-game.html" class="btn btn-play">▶ ابدأ اللعب</a>
     </div>
   </div>
 

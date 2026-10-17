@@ -81,15 +81,20 @@
       tone(600, 0.10, "sine", 0.18);
       tone(900, 0.20, "sine", 0.18, c.currentTime + 0.08);
     },
-    // فوز نهائي — لحن احتفالي
+        // فوز نهائي — لحن احتفالي
     win(){
       const c = getCtx(); if(!c) return;
       const notes = [523, 659, 784, 1047];  // C-E-G-C
       notes.forEach((f, i) => {
         tone(f, 0.25, "sine", 0.18, c.currentTime + i * 0.13);
       });
+    },
+    // أكل التفاحة
+    eat(){
+      const c = getCtx(); if(!c) return;
+      tone(800, 0.08, "square", 0.12);
+      tone(1200, 0.06, "sine", 0.10, c.currentTime + 0.05);
     }
-  };
 
   // الواجهة العامة
   window.SFX = {
