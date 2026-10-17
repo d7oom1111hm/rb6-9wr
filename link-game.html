@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>اربطها صح</title>
+<title>تحدي الصور</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
 <style>
 :root{
   --bg:#f4efe6; --panel:#fbf7ef; --panel2:#efe7d8;
@@ -23,7 +24,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .hidden{display:none!important}
 .wrap{max-width:1100px;margin:0 auto;padding:16px}
 
-/* ---------- Setup ---------- */
 #setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}
 .setup-card{width:100%;max-width:760px;background:var(--panel);
   border:1px solid var(--line);border-radius:22px;padding:28px;
@@ -55,7 +55,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .rules{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.9;text-align:center}
 .loading-msg{text-align:center;color:var(--muted);padding:8px;font-size:14px}
 
-/* ---------- Avatar Picker Modal ---------- */
 #avatarPicker{position:fixed;inset:0;z-index:100;background:rgba(58,53,47,.55);backdrop-filter:blur(4px);
   display:flex;align-items:center;justify-content:center;padding:16px}
 .picker-card{width:100%;max-width:640px;background:var(--panel);
@@ -68,7 +67,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .picker-grid img:hover{border-color:var(--gold);transform:scale(1.07)}
 .picker-close{display:block;margin:16px auto 0}
 
-/* ---------- Scoreboard ---------- */
 .scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
   background:var(--panel);border:1px solid var(--line);
   border-radius:18px;padding:12px 16px;position:sticky;top:8px;z-index:10;
@@ -87,7 +85,26 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .sb-mid .qn{font-size:13px;color:var(--muted)}
 .sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent)}
 
-/* ---------- Game ---------- */
+/* شريط تقدم الأسئلة */
+.progress-wrap{
+  margin:10px 0 4px;
+  display:flex;align-items:center;gap:10px;
+}
+.progress-bar{
+  flex:1;height:8px;border-radius:99px;
+  background:rgba(58,53,47,.08);overflow:hidden;
+  border:1px solid var(--line);
+}
+.progress-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+  transition:width .4s ease;
+}
+.progress-txt{
+  font-size:13px;color:var(--muted);font-weight:700;
+  white-space:nowrap;
+}
+
 .timer-wrap{margin:14px 0 4px;display:flex;align-items:center;gap:12px}
 .timer-bar{flex:1;height:14px;border-radius:99px;background:rgba(58,53,47,.08);overflow:hidden;border:1px solid var(--line)}
 .timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent);
@@ -135,7 +152,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .award .btn{min-width:150px}
 .award-done{color:var(--ok);font-weight:700;font-size:18px}
 
-/* ---------- End ---------- */
 #end{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
 .end-card{width:100%;max-width:640px;text-align:center;background:var(--panel);
   border:1px solid rgba(201,162,39,.5);border-radius:22px;padding:30px;box-shadow:0 10px 40px rgba(201,162,39,.15)}
@@ -145,6 +161,17 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .final{display:flex;justify-content:center;gap:30px;margin:16px 0 24px;flex-wrap:wrap}
 .final div{background:rgba(58,53,47,.04);padding:12px 22px;border-radius:14px;min-width:140px}
 .final b{display:block;font-size:28px;color:var(--accent)}
+
+/* زر الرجوع للرئيسية */
+.home-btn{
+  position:fixed;bottom:18px;right:18px;z-index:200;
+  width:52px;height:52px;border-radius:50%;font-size:22px;
+  background:#fbf7ef;border:1px solid rgba(58,53,47,.15);
+  box-shadow:0 4px 14px rgba(58,53,47,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;text-decoration:none;color:var(--text);
+}
+.home-btn:hover{transform:scale(1.08);background:#efe7d8}
 
 @media (max-width:640px){
   .teams-setup{grid-template-columns:1fr}
@@ -160,11 +187,10 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 </head>
 <body>
 
-<!-- ============ شاشة الإعداد ============ -->
 <section id="setup">
   <div class="setup-card">
     <div class="logo">
-      <h1>اربطها صح</h1>
+      <h1>🎯 تحدي الصور</h1>
       <p>افتح الصور بحكمة… كلما فتحت صورًا أكثر قلّت النقاط!</p>
     </div>
     <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
@@ -192,7 +218,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- ============ نافذة اختيار الصورة الرمزية ============ -->
 <div id="avatarPicker" class="hidden">
   <div class="picker-card">
     <h3>اختر صورة الفريق</h3>
@@ -201,7 +226,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </div>
 
-<!-- ============ شاشة اللعب ============ -->
 <section id="game" class="hidden">
   <div class="wrap">
     <div class="scoreboard">
@@ -217,6 +241,11 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         <img class="sb-avatar" id="sbAv2" alt="">
         <div class="sb-info" style="text-align:left"><div class="sb-name" id="sbName2"></div><div class="sb-score" id="sbScore2">0</div></div>
       </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-txt" id="progressTxt">السؤال 1 من 15</div>
     </div>
 
     <div class="timer-wrap">
@@ -253,7 +282,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- ============ شاشة النهاية ============ -->
 <section id="end" class="hidden">
   <div class="end-card">
     <h2 id="endTitle">🏆</h2>
@@ -267,14 +295,11 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- زر كتم الصوت -->
+<a href="index.html" class="home-btn" title="الرجوع للرئيسية">🏠</a>
 <button id="soundToggle" title="كتم الصوت" style="position:fixed;bottom:18px;left:18px;z-index:200;width:52px;height:52px;border-radius:50%;font-size:22px;background:#fbf7ef;border:1px solid rgba(58,53,47,.15);box-shadow:0 4px 14px rgba(58,53,47,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s">🔊</button>
 
 <script src="sounds.js"></script>
 <script>
-/* =====================================================
-   الإعدادات الافتراضية (تُستبدل من questions-link.json)
-   ===================================================== */
 let CONFIG = {
   BAR_CYCLE_SECONDS: 30,
   POINTS: [500, 500, 400, 300, 200],
@@ -287,9 +312,6 @@ let CONFIG = {
 let AVATARS = [];
 let QUESTIONS = [];
 
-/* =====================================================
-   تحميل البيانات من questions-link.json
-   ===================================================== */
 async function loadGameData(){
   try{
     const r = await fetch("questions-link.json?v=" + Date.now());
@@ -304,9 +326,6 @@ async function loadGameData(){
   }
 }
 
-/* =====================================================
-   أدوات مساعدة
-   ===================================================== */
 const $ = id => document.getElementById(id);
 const svgURI = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 function imgURL(v){ return /^(https?:|data:)/.test(v) ? v : "https://images.unsplash.com/" + v + CONFIG.IMG_PARAMS; }
@@ -319,9 +338,6 @@ function defaultAvatar(color){
 }
 const DEF_AV = [defaultAvatar("#6d8b74"), defaultAvatar("#a98467")];
 
-/* =====================================================
-   الحالة
-   ===================================================== */
 let teams = [
   { name:"", avatar:DEF_AV[0], score:0 },
   { name:"", avatar:DEF_AV[1], score:0 }
@@ -329,9 +345,6 @@ let teams = [
 let quiz = [], qi = 0, opened = 0, timerId = null, qState = "idle";
 let elapsedMs = 0, running = false, lastTick = 0;
 
-/* =====================================================
-   التهيئة
-   ===================================================== */
 function initUI(){
   $("av1").src = DEF_AV[0];
   $("av2").src = DEF_AV[1];
@@ -340,13 +353,18 @@ function initUI(){
   $("rulesBox").innerHTML =
     `${CONFIG.QUESTIONS_COUNT} سؤالًا • 4 صور مغطاة • مؤقت بلا حد (إيقاف / استئناف / إعادة)<br>` +
     `النقاط حسب عدد الصور المفتوحة: ${CONFIG.POINTS.join(" → ")}`;
+
+  // استرجاع أسماء الفرق المحفوظة
+  try{
+    const n1 = localStorage.getItem("quiz_team1_name");
+    const n2 = localStorage.getItem("quiz_team2_name");
+    if(n1) $("name1").value = n1;
+    if(n2) $("name2").value = n2;
+  }catch(e){}
 }
 
 function openPicker(idx){
-  if(!AVATARS.length){
-    alert("لا توجد صور رمزية. أضفها من الداشبورد.");
-    return;
-  }
+  if(!AVATARS.length){ alert("لا توجد صور رمزية. أضفها من الداشبورد."); return; }
   const grid = $("pickerGrid");
   grid.innerHTML = "";
   AVATARS.forEach(src => {
@@ -374,6 +392,13 @@ $("startBtn").onclick = () => {
     alert("لا توجد أسئلة. أضفها من الداشبورد أولًا.");
     return;
   }
+
+  // حفظ أسماء الفرق
+  try{
+    localStorage.setItem("quiz_team1_name", $("name1").value.trim());
+    localStorage.setItem("quiz_team2_name", $("name2").value.trim());
+  }catch(e){}
+
   teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
   teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
   teams[0].score = teams[1].score = 0;
@@ -394,9 +419,6 @@ $("startBtn").onclick = () => {
   loadQuestion();
 };
 
-/* =====================================================
-   منطق اللعبة
-   ===================================================== */
 function curPoints(){ return CONFIG.POINTS[Math.min(opened, CONFIG.POINTS.length-1)]; }
 
 function updateScores(bumpIdx){
@@ -418,6 +440,14 @@ function loadQuestion(){
   const q = quiz[qi];
   opened = 0; qState = "playing";
   $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
+
+  // شريط تقدم
+  const total = quiz.length;
+  const current = qi + 1;
+  const pct = (current / total) * 100;
+  const pf = $("progressFill"), pt = $("progressTxt");
+  if(pf){ pf.style.width = pct + "%"; }
+  if(pt){ pt.textContent = `السؤال ${current} من ${total}`; }
 
   const grid = $("grid"); grid.innerHTML = "";
   (q.images || ["","","",""]).forEach((src, i) => {
@@ -575,7 +605,6 @@ function endGame(){
   }
 }
 
-/* ---------- الأزرار مع الأصوات ---------- */
 const sfx = (n) => { if(window.SFX) window.SFX.play(n); };
 
 $("pauseBtn").onclick      = () => { sfx("click"); toggleTimer(); };
@@ -593,9 +622,6 @@ $("againBtn").onclick      = () => {
   $("setup").classList.remove("hidden");
 };
 
-/* =====================================================
-   زر كتم الصوت
-   ===================================================== */
 (function initSoundToggle(){
   const btn = $("soundToggle");
   if(!btn || !window.SFX) return;
@@ -610,9 +636,6 @@ $("againBtn").onclick      = () => {
   };
 })();
 
-/* =====================================================
-   التشغيل
-   ===================================================== */
 (async function boot(){
   await loadGameData();
   initUI();

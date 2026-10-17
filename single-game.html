@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>كملها بعقلك</title>
+<title>تحدي الصورة</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖼️</text></svg>">
 <style>
 :root{
@@ -15,10 +15,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{min-height:100%}
 body{
-  background:
-    radial-gradient(1000px 600px at 80% -10%,rgba(169,132,103,.18),transparent 60%),
-    radial-gradient(900px 500px at 10% 110%,rgba(109,139,116,.15),transparent 60%),
-    var(--bg);
+  background:radial-gradient(1000px 600px at 80% -10%,rgba(169,132,103,.18),transparent 60%),
+             radial-gradient(900px 500px at 10% 110%,rgba(109,139,116,.15),transparent 60%),var(--bg);
   color:var(--text);font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",Arial,sans-serif;
   min-height:100vh;
 }
@@ -26,7 +24,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .hidden{display:none!important}
 .wrap{max-width:1100px;margin:0 auto;padding:16px}
 
-/* ---------- Setup ---------- */
 #setup{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px}
 .setup-card{width:100%;max-width:760px;background:var(--panel);
   border:1px solid var(--line);border-radius:22px;padding:28px;
@@ -70,7 +67,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .rules{margin-top:18px;color:var(--muted);font-size:13px;line-height:1.9;text-align:center}
 .loading-msg{text-align:center;color:var(--muted);padding:8px;font-size:14px}
 
-/* ---------- Avatar Picker Modal ---------- */
 #avatarPicker{position:fixed;inset:0;z-index:100;background:rgba(58,53,47,.55);backdrop-filter:blur(4px);
   display:flex;align-items:center;justify-content:center;padding:16px}
 .picker-card{width:100%;max-width:640px;background:var(--panel);
@@ -83,7 +79,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .picker-grid img:hover{border-color:var(--gold);transform:scale(1.07)}
 .picker-close{display:block;margin:16px auto 0}
 
-/* ---------- Scoreboard ---------- */
 .scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;
   background:var(--panel);border:1px solid var(--line);
   border-radius:18px;padding:12px 16px;position:sticky;top:8px;z-index:10;
@@ -103,7 +98,26 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .sb-mid .qn{font-size:13px;color:var(--muted)}
 .sb-mid .pts{font-size:22px;font-weight:800;color:var(--accent)}
 
-/* ---------- Timer ---------- */
+/* شريط تقدم الأسئلة */
+.progress-wrap{
+  margin:10px 0 4px;
+  display:flex;align-items:center;gap:10px;
+}
+.progress-bar{
+  flex:1;height:8px;border-radius:99px;
+  background:rgba(58,53,47,.08);overflow:hidden;
+  border:1px solid var(--line);
+}
+.progress-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+  transition:width .4s ease;
+}
+.progress-txt{
+  font-size:13px;color:var(--muted);font-weight:700;
+  white-space:nowrap;
+}
+
 .timer-wrap{margin:14px 0 4px;display:flex;align-items:center;gap:12px}
 .timer-bar{flex:1;height:14px;border-radius:99px;background:rgba(58,53,47,.08);overflow:hidden;border:1px solid var(--line)}
 .timer-fill{height:100%;width:100%;border-radius:99px;background:var(--accent);
@@ -112,7 +126,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .tbtn{padding:8px 14px;font-size:14px;white-space:nowrap}
 .timer-num.warn{color:var(--gold)} .timer-num.danger{color:var(--danger)}
 
-/* ---------- Image Area ---------- */
 .image-area{
   background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;
   margin:16px 0;box-shadow:0 8px 28px rgba(58,53,47,.10);
@@ -153,7 +166,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .answer-box .lbl{color:var(--muted);font-size:14px;margin-bottom:6px}
 .answer-box .ans{color:var(--accent);font-size:clamp(26px,5vw,40px);font-weight:800;letter-spacing:.5px}
 
-/* ---------- Solo Input ---------- */
 .solo-area{
   background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;
   margin:16px 0;box-shadow:0 8px 28px rgba(58,53,47,.10);
@@ -179,7 +191,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .try-dot.used{background:var(--danger);opacity:.7}
 .try-dot.current{background:var(--accent);transform:scale(1.2)}
 
-/* ---------- Award ---------- */
 .award-panel{
   background:var(--panel);border:1px solid var(--line);border-radius:18px;
   padding:18px;text-align:center;margin-bottom:14px;
@@ -213,7 +224,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0}
 .award-done{color:var(--ok);font-weight:700;font-size:18px;margin-top:8px}
 
-/* ---------- End ---------- */
 #end{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
 .end-card{width:100%;max-width:640px;text-align:center;background:var(--panel);
   border:1px solid rgba(201,162,39,.5);border-radius:22px;padding:30px;box-shadow:0 10px 40px rgba(201,162,39,.15)}
@@ -231,6 +241,17 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 .solo-report .stat.good .num{color:var(--ok)}
 .solo-report .stat.bad .num{color:var(--danger)}
 
+/* زر الرجوع للرئيسية */
+.home-btn{
+  position:fixed;bottom:18px;right:18px;z-index:200;
+  width:52px;height:52px;border-radius:50%;font-size:22px;
+  background:#fbf7ef;border:1px solid rgba(58,53,47,.15);
+  box-shadow:0 4px 14px rgba(58,53,47,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:.15s;text-decoration:none;color:var(--text);
+}
+.home-btn:hover{transform:scale(1.08);background:#efe7d8}
+
 @media (max-width:640px){
   .teams-setup{grid-template-columns:1fr}
   .mode-select{grid-template-columns:1fr}
@@ -246,16 +267,14 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
 </head>
 <body>
 
-<!-- ============ شاشة الإعداد ============ -->
 <section id="setup">
   <div class="setup-card">
     <div class="logo">
-      <h1>كملها بعقلك</h1>
+      <h1>🖼️ تحدي الصورة</h1>
       <p>صورة واحدة… خمّن ما تدل عليه!</p>
     </div>
     <div class="loading-msg" id="loadingMsg">⏳ جاري تحميل الأسئلة...</div>
 
-    <!-- اختيار الوضع -->
     <div id="modeChooser" class="hidden">
       <div class="mode-select">
         <div class="mode-btn active" id="modeTwo" data-mode="two">
@@ -295,7 +314,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- ============ نافذة اختيار الصورة الرمزية ============ -->
 <div id="avatarPicker" class="hidden">
   <div class="picker-card">
     <h3>اختر صورة الفريق</h3>
@@ -304,7 +322,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </div>
 
-<!-- ============ شاشة اللعب ============ -->
 <section id="game" class="hidden">
   <div class="wrap">
     <div class="scoreboard" id="scoreboard">
@@ -320,6 +337,11 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
         <img class="sb-avatar" id="sbAv2" alt="">
         <div class="sb-info" style="text-align:left"><div class="sb-name" id="sbName2"></div><div class="sb-score" id="sbScore2">0</div></div>
       </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-txt" id="progressTxt">السؤال 1 من 15</div>
     </div>
 
     <div class="timer-wrap">
@@ -342,7 +364,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       </div>
     </div>
 
-    <!-- منطقة الإجابة للاعب الواحد -->
     <div class="solo-area hidden" id="soloArea">
       <div class="solo-input-row">
         <input type="text" id="soloInput" placeholder="اكتب إجابتك هنا..." autocomplete="off" spellcheck="false">
@@ -358,7 +379,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
       <button class="btn btn-ghost" id="skipBtn">⏭ تخطي</button>
     </div>
 
-    <!-- لوحة الفائز (وضع الفريقين) -->
     <div class="award-panel hidden" id="awardPanel">
       <div class="sub">من أجاب أولًا؟ سيحصل على <b id="awardPts">1</b> نقطة</div>
       <div class="award" id="awardBtns">
@@ -389,7 +409,6 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- ============ شاشة النهاية ============ -->
 <section id="end" class="hidden">
   <div class="end-card">
     <h2 id="endTitle">🏆</h2>
@@ -408,14 +427,11 @@ button{font-family:inherit;cursor:pointer;border:none;color:inherit}
   </div>
 </section>
 
-<!-- زر كتم الصوت -->
+<a href="index.html" class="home-btn" title="الرجوع للرئيسية">🏠</a>
 <button id="soundToggle" title="كتم الصوت" style="position:fixed;bottom:18px;left:18px;z-index:200;width:52px;height:52px;border-radius:50%;font-size:22px;background:#fbf7ef;border:1px solid rgba(58,53,47,.15);box-shadow:0 4px 14px rgba(58,53,47,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s">🔊</button>
 
 <script src="sounds.js"></script>
 <script>
-/* =====================================================
-   الإعدادات
-   ===================================================== */
 let CONFIG = {
   BAR_CYCLE_SECONDS: 30,
   QUESTIONS_COUNT: 15,
@@ -431,9 +447,6 @@ let CONFIG = {
 let AVATARS = [];
 let QUESTIONS = [];
 
-/* =====================================================
-   تحميل البيانات
-   ===================================================== */
 async function loadGameData(){
   try{
     const r = await fetch("questions-single.json?v=" + Date.now());
@@ -448,9 +461,6 @@ async function loadGameData(){
   }
 }
 
-/* =====================================================
-   أدوات
-   ===================================================== */
 const $ = id => document.getElementById(id);
 const svgURI = svg => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 function imgURL(v){ return /^(https?:|data:)/.test(v) ? v : "https://images.unsplash.com/" + v + "?auto=format&fit=crop&w=900&q=75"; }
@@ -462,20 +472,17 @@ function defaultAvatar(color){
 }
 const DEF_AV = [defaultAvatar("#6d8b74"), defaultAvatar("#a98467")];
 
-/* =====================================================
-   مطابقة النص المرنة
-   ===================================================== */
 function normalizeText(s){
   if(!s) return "";
   return String(s)
     .trim()
     .toLowerCase()
-    .replace(/[\u064B-\u0652\u0670\u0640]/g, "") // تشكيل + تطويل
+    .replace(/[\u064B-\u0652\u0670\u0640]/g, "")
     .replace(/[أإآا]/g, "ا")
     .replace(/[ىي]/g, "ي")
     .replace(/[ؤو]/g, "و")
     .replace(/ة/g, "ه")
-    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, "") // إزالة الرموز
+    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -492,30 +499,23 @@ function checkAnswer(userInput, question){
   return false;
 }
 
-/* =====================================================
-   الحالة
-   ===================================================== */
 let teams = [
   { name:"", avatar:DEF_AV[0], score:0 },
   { name:"", avatar:DEF_AV[1], score:0 }
 ];
-let playMode = "two"; // "two" | "solo"
+let playMode = "two";
 let soloStats = { right:0, wrong:0, score:0 };
 let currentTry = 0;
-let soloLocked = false; // لقفل الإدخال أثناء الانتقال
+let soloLocked = false;
 
 let quiz = [], qi = 0, timerId = null, qState = "idle";
 let elapsedMs = 0, running = false, lastTick = 0;
 
-/* =====================================================
-   التهيئة
-   ===================================================== */
 function initUI(){
   $("av1").src = DEF_AV[0];
   $("av2").src = DEF_AV[1];
   $("loadingMsg").classList.add("hidden");
 
-  // خيار الوضع
   if(CONFIG.SOLO_MODE_ENABLED){
     $("modeChooser").classList.remove("hidden");
   } else {
@@ -525,14 +525,20 @@ function initUI(){
 
   updateModeUI();
   updateRulesText();
+
+  // استرجاع أسماء الفرق المحفوظة
+  try{
+    const n1 = localStorage.getItem("quiz_team1_name");
+    const n2 = localStorage.getItem("quiz_team2_name");
+    if(n1) $("name1").value = n1;
+    if(n2) $("name2").value = n2;
+  }catch(e){}
 }
 
 function updateModeUI(){
-  // تحديث أزرار الوضع
   document.querySelectorAll(".mode-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.mode === playMode);
   });
-  // إظهار/إخفاء الفريق الثاني
   if(playMode === "solo"){
     $("teamBox2").classList.add("hidden");
     $("teamsSetup").classList.add("solo");
@@ -554,7 +560,6 @@ function updateRulesText(){
   }
 }
 
-// ربط اختيار الوضع
 document.querySelectorAll(".mode-btn").forEach(b => {
   b.onclick = () => {
     if(window.SFX) window.SFX.play("click");
@@ -564,9 +569,6 @@ document.querySelectorAll(".mode-btn").forEach(b => {
   };
 });
 
-/* =====================================================
-   اختيار الصورة الرمزية
-   ===================================================== */
 function openPicker(idx){
   if(!AVATARS.length){ alert("لا توجد صور رمزية. أضفها من الداشبورد."); return; }
   const grid = $("pickerGrid");
@@ -591,11 +593,14 @@ $("pick2").onclick = () => openPicker(1);
 $("pickerClose").onclick = closePicker;
 $("avatarPicker").onclick = e => { if(e.target.id === "avatarPicker") closePicker(); };
 
-/* =====================================================
-   بدء المباراة
-   ===================================================== */
 $("startBtn").onclick = () => {
   if(!QUESTIONS.length){ alert("لا توجد أسئلة. أضفها من الداشبورد أولًا."); return; }
+
+  // حفظ أسماء الفرق
+  try{
+    localStorage.setItem("quiz_team1_name", $("name1").value.trim());
+    localStorage.setItem("quiz_team2_name", $("name2").value.trim());
+  }catch(e){}
 
   teams[0].name = $("name1").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[0];
   teams[1].name = $("name2").value.trim() || CONFIG.DEFAULT_TEAM_NAMES[1];
@@ -607,7 +612,6 @@ $("startBtn").onclick = () => {
   if(CONFIG.SHUFFLE_QUESTIONS) quiz = quiz.map(q=>[Math.random(),q]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
   qi = 0;
 
-  // تجهيز لوحة النتائج
   $("sbAv1").src = teams[0].avatar;
   $("sbName1").textContent = teams[0].name;
   $("award1").textContent = "✔ " + teams[0].name;
@@ -635,9 +639,6 @@ $("startBtn").onclick = () => {
   loadQuestion();
 };
 
-/* =====================================================
-   منطق اللعبة
-   ===================================================== */
 function updateScores(bumpIdx){
   if(playMode === "solo"){
     $("sbScore1").textContent = soloStats.score;
@@ -660,31 +661,34 @@ function loadQuestion(){
   $("qNum").textContent = `السؤال ${qi+1} من ${quiz.length}`;
   $("curPts").textContent = playMode === "solo" ? CONFIG.SOLO_POINTS : CONFIG.POINTS_PER_QUESTION;
 
-  // الصورة
+  // شريط تقدم
+  const total = quiz.length;
+  const current = qi + 1;
+  const pct = (current / total) * 100;
+  const pf = $("progressFill"), pt = $("progressTxt");
+  if(pf){ pf.style.width = pct + "%"; }
+  if(pt){ pt.textContent = `السؤال ${current} من ${total}`; }
+
   const im = $("qImage");
   im.onerror = () => { im.onerror = null; im.src = fallbackImg(q.answer); };
   im.src = q.image ? imgURL(q.image) : fallbackImg(q.answer);
 
-  // إخفاء التلميح والجواب
   $("hintBox").classList.add("hidden");
   $("hintText").textContent = "";
   $("answerBox").classList.add("hidden");
   $("ansText").textContent = "";
 
-  // لوحة الفائز
   $("awardPanel").classList.add("hidden");
   $("awardBtns").classList.remove("hidden");
   $("manualEdit").classList.remove("show");
   $("awardDone").classList.add("hidden");
   $("nextBtn").classList.add("hidden");
 
-  // الأزرار
   $("hintBtn").disabled = false;
   $("revealBtn").disabled = false;
   $("skipBtn").disabled = false;
   $("nextBtn").textContent = (qi === quiz.length-1) ? "🏁 إنهاء المباراة" : "السؤال التالي ➜";
 
-  // الوضع الفردي
   if(playMode === "solo"){
     $("soloArea").classList.remove("hidden");
     $("soloInput").value = "";
@@ -714,7 +718,6 @@ function paintTriesDots(){
   }
 }
 
-/* ---------- المؤقت ---------- */
 function startTimer(){
   clearInterval(timerId);
   elapsedMs = 0; running = true; lastTick = Date.now();
@@ -748,7 +751,6 @@ function paintTimer(){
   $("pauseBtn").textContent = running ? "⏸ إيقاف" : "▶ استئناف";
 }
 
-/* ---------- تلميح ---------- */
 function showHint(){
   if(qState !== "playing" && qState !== "solo-playing") return;
   const q = quiz[qi];
@@ -758,7 +760,6 @@ function showHint(){
   $("hintBtn").disabled = true;
 }
 
-/* ---------- الوضع الفردي: التحقق ---------- */
 function soloCheck(){
   if(playMode !== "solo" || soloLocked) return;
   if(qState !== "playing") return;
@@ -771,7 +772,6 @@ function soloCheck(){
   }
   const q = quiz[qi];
   if(checkAnswer(val, q)){
-    // صح
     input.className = "ok";
     input.disabled = true;
     $("soloCheckBtn").disabled = true;
@@ -783,7 +783,6 @@ function soloCheck(){
     $("soloStatus").className = "solo-status ok";
     qState = "solo-done";
     stopTimer();
-    // إظهار الجواب + زر التالي
     $("ansText").textContent = q.answer || "—";
     $("answerBox").classList.remove("hidden");
     $("hintBtn").disabled = true;
@@ -791,13 +790,11 @@ function soloCheck(){
     $("skipBtn").disabled = true;
     $("nextBtn").classList.remove("hidden");
   } else {
-    // غلط
     currentTry++;
     if(window.SFX) window.SFX.play("fail");
     input.className = "err";
     setTimeout(() => { input.className = ""; }, 400);
     if(currentTry >= CONFIG.SOLO_TRIES){
-      // خلصت المحاولات
       input.value = "";
       input.disabled = true;
       $("soloCheckBtn").disabled = true;
@@ -808,16 +805,13 @@ function soloCheck(){
       soloLocked = true;
       qState = "solo-done";
       stopTimer();
-      // إظهار الجواب
       $("ansText").textContent = q.answer || "—";
       $("answerBox").classList.remove("hidden");
       $("hintBtn").disabled = true;
       $("revealBtn").disabled = true;
       $("skipBtn").disabled = true;
-      // بعد 2.5 ثانية ينتقل تلقائيًا
       setTimeout(() => { nextQuestion(); }, 2500);
     } else {
-      // محاولات باقية
       input.value = "";
       $("soloStatus").textContent = `❌ إجابة خاطئة — المحاولات المتبقية: ${CONFIG.SOLO_TRIES - currentTry}`;
       $("soloStatus").className = "solo-status err";
@@ -833,10 +827,8 @@ function stopTimer(){
   paintTimer();
 }
 
-/* ---------- إظهار الإجابة (الفريقين) ---------- */
 function revealAnswer(){
   if(playMode === "solo"){
-    // في الوضع الفردي: إظهار الجواب = تخطي
     if(qState !== "playing") return;
     if(window.SFX) window.SFX.play("reveal");
     qState = "solo-done";
@@ -858,7 +850,6 @@ function revealAnswer(){
     return;
   }
 
-  // وضع الفريقين
   if(qState !== "playing") return;
   qState = "revealed";
   stopTimer();
@@ -875,7 +866,6 @@ function revealAnswer(){
   $("awardPanel").scrollIntoView({behavior:"smooth", block:"center"});
 }
 
-/* ---------- منح النقطة (الفريقين) ---------- */
 function award(idx){
   if(playMode === "solo") return;
   if(qState !== "revealed") return;
@@ -918,7 +908,6 @@ document.querySelectorAll("[data-minus]").forEach(b => {
   };
 });
 
-/* ---------- التنقل ---------- */
 function nextQuestion(){
   if(qi >= quiz.length - 1){ return endGame(); }
   qi++; loadQuestion();
@@ -975,7 +964,6 @@ function endGame(){
   }
 }
 
-/* ---------- الأزرار مع الأصوات ---------- */
 const sfx = (n) => { if(window.SFX) window.SFX.play(n); };
 
 $("pauseBtn").onclick      = () => { sfx("click"); toggleTimer(); };
@@ -994,14 +982,10 @@ $("againBtn").onclick      = () => {
   $("setup").classList.remove("hidden");
 };
 
-// ضغط Enter في حقل الإجابة = تحقق
 $("soloInput").addEventListener("keydown", (e) => {
   if(e.key === "Enter"){ e.preventDefault(); soloCheck(); }
 });
 
-/* =====================================================
-   زر كتم الصوت
-   ===================================================== */
 (function initSoundToggle(){
   const btn = $("soundToggle");
   if(!btn || !window.SFX) return;
@@ -1016,9 +1000,6 @@ $("soloInput").addEventListener("keydown", (e) => {
   };
 })();
 
-/* =====================================================
-   التشغيل
-   ===================================================== */
 (async function boot(){
   await loadGameData();
   initUI();
